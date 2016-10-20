@@ -8,8 +8,8 @@
 //ini_set("display_errors","off");
 $_host = "127.0.0.1";
 $_sqlUser = "root";
-$_sqlPwd = "wqj9705";
-$_sqlDB = "zhaoxiangguan";
+$_sqlPwd = "Wanqj97...";
+$_sqlDB = "Express";
 $sql = new mysqli($_host,$_sqlUser,$_sqlPwd,$_sqlDB);
 $sql->query("set names utf8");
 define("appId","");
