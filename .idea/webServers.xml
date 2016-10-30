@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="3caeee19-422d-4443-9925-16b58ff6aac1" name="123.206.71.121" url="http://dq.97qingnian.com">
+        <fileTransfer host="123.206.71.121" port="21" rootFolder="/dq.97qingnian.com">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

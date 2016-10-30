@@ -7,7 +7,7 @@
  */
 
 session_start();
-require_once '../model/sql.php';
+require_once '../model/base.php';
 global $sql;
 $type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
 $type = $type->fetch_row();

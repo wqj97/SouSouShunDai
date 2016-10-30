@@ -6,7 +6,7 @@
  * Time: 上午10:55
  */
 session_start();
-require_once "model/sql.php";
+require_once "model/base.php";
 if(!isset($_COOKIE["openid"])){
     $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".appId."&redirect_uri=".redirectURL."&response_type=code&scope=snsapi_userinfo#wechat_redirect";
     header("location:$url");
