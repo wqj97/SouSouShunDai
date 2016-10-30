@@ -8,9 +8,6 @@ require_once 'base.php';
  */
 class UserUtils
 {
-	// Cannot instantiation
-	private function __construct($arg){}
-	
 	/**
 	 * @param name 		name of new user
 	 * @param sex 		sex of new user
@@ -20,7 +17,7 @@ class UserUtils
 		global $sql;
 		// Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type
 		// $statement = $sql->prepare('INSERT INTO `user` VALUES(0,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL,?,NULL)');
-		$statement = $sql->prepare('INSERT INTO `user` VALUES(?,NULL,NULL,NULL,NULL,NULL,NULL,NULL,?,NULL)');
+		$statement = $sql->prepare('INSERT INTO user(name,sexual) VALUES(?,?)');
 		$statement->bind_param($name,$sex);
 		$statement->execute();
 
@@ -39,7 +36,7 @@ class UserUtils
 		$statement->bind_param($name,$sex,$id);
 		$statement->execute();
 	}
-
+	
 	/**
 	 * @param id 		id of user
 	 * @param name 		new location
@@ -51,7 +48,7 @@ class UserUtils
 		$statement->bind_param($location,$id);
 		$statement->execute();
 	}
-
+	
 	/**
 	 * @param id 		id of user
 	 * @param tel 		new telephone number
@@ -69,13 +66,13 @@ class UserUtils
 			return false;
 		}
 	}
-
+	
 	/**
 	 * @param id 		id of user
-	 * @return Array, 
-	 	if 'success' is false, 'content' is errinfo; <br> 
-	 	if 'success' is true, 'content' is Array (ASSOC).<br>
-	 	fields: Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type.
+	 * @return JSON object with an Array, 
+	 *	if 'success' is false, 'content' is errinfo; <br> 
+	 *	if 'success' is true, 'content' is Array (ASSOC).<br>
+	 *	fields: Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type.
 	 */
 	public function getUserInfo($id){
 		global $sql;
@@ -84,16 +81,16 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return array('success' => false, 'content' => 'No such user!');
+			return ['success' => false, 'content' => 'No such user!'];
 		else
-			return array('success' => true, 'content' => $row);
+			return ['success' => true, 'content' => $row];
 	}
-
+	
 	/**
 	 * @param id 		id of user
-	 * @return Array, 
-	 	if 'success' is false, 'content' is errinfo; <br> 
-	 	if 'success' is true, 'content' is an array containing name,tel and sex.<br>
+	 * @return JSON object with an Array, 
+	 *	if 'success' is false, 'content' is errinfo; <br> 
+	 *	if 'success' is true, 'content' is an array containing name,tel and sex.<br>
 	 */
 	public function getNameTelSex($id){
 		global $sql;
@@ -102,16 +99,16 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return array('success' => false, 'content' => 'No such user!');
+			return ['success' => false, 'content' => 'No such user!'];
 		else
-			return array('success' => true, 'content' => array($row['name'],$row['phone'],$row['sexual']));
+			return ['success' => true, 'content' => [$row['name'],$row['phone'],$row['sexual']]];
 	}
-
+	
 	/**
 	 * @param orderId 		id of order
-	 * @return Array, 
-	 	if 'success' is false, 'content' is errinfo; <br> 
-	 	if 'success' is true, 'content' is publisher id.
+	 * @return JSON object with an Array, 
+	 *	if 'success' is false, 'content' is errinfo; <br> 
+	 *	if 'success' is true, 'content' is publisher id.
 	 */
 	public function getPublisherByOrder($orderId){
 		global $sql;
@@ -120,16 +117,16 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return array('success' => false, 'content' => 'No such order!');
+			return ['success' => false, 'content' => 'No such order!'];
 		else
-			return array('success' => true, 'content' => $row['userId']);
+			return ['success' => true, 'content' => $row['userId']];
 	}
-
+	
 	/**
 	 * @param orderId 		id of order
-	 * @return Array, 
-	 	if 'success' is false, 'content' is errinfo; <br> 
-	 	if 'success' is true, 'content' is courier id.
+	 * @return JSON object with an Array, 
+	 *	if 'success' is false, 'content' is errinfo; <br> 
+	 *	if 'success' is true, 'content' is courier id.
 	 */
 	public function getCourierByOrder($orderId){
 		global $sql;
@@ -138,8 +135,8 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return array('success' => false, 'content' => 'No such order!');
+			return ['success' => false, 'content' => 'No such order!'];
 		else
-			return array('success' => true, 'content' => $row['toker']);
+			return ['success' => true, 'content' => $row['toker']];
 	}
 }
