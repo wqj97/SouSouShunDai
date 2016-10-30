@@ -5,64 +5,79 @@ require_once "base.php";
 class order
 {
     //创建新订单
-    public function newOrder($date,$price,$expire,$size,$remark,$receiveTime){
+    public function newOrder($date, $price, $expire, $size, $remark, $receiveTime)
+    {
         global $sql;
-        $action = $sql->prepare("insert into orders(`date`,`price`,`expire`,`size`,`remark`,`receiveTime`) VALUES (?,?,?,?,?,?)");
-        $action->bind_param("ssssss",$date,$price,$expire,$size,$remark,$receiveTime);
+        $action = $sql->prepare("insert into orders(`userId`,`date`,`price`,`expire`,`size`,`remark`,`receiveTime`) VALUES (?,?,?,?,?,?,?)");
+        $action->bind_param("sssssss", $_SESSION["UID"], $date, $price, $expire, $size, $remark, $receiveTime);
         $action->execute();
-        if(!$action->error){
-            return $this->JSONout(array("result"=>"成功"));
+        if (!$action->error) {
+            return $this->JSONout(array("result" => "成功"));
+        } else {
+            return $this->JSONout(array("result" => "失败", "reason" => $sql->error));
         }
-       else{
-           return $this->JSONout(array("result"=>"失败","reason"=>$sql->error));
-       }
     }
+
     //修改订单
-    public function upOrder($Id,$date,$price,$expire,$size,$remark,$receiveTime){
+    public function upOrder($Id, $date, $price, $expire, $size, $remark, $receiveTime)
+    {
         global $sql;
-        $action=$sql->prepare("update orders set `date`='$date',`price`='$price',`expire`='$expire',`size`='$size',`remark`='$remark',`receiveTime`='$receiveTime' WHERE Id='$Id'");
-        $action->bind_param("ssssss",$date,$price,$expire,$size,$remark,$receiveTime);
+        $action = $sql->prepare("update orders set `date`= ? ,`price`= ? ,`expire`= ? ,`size`= ? ,`remark`= ? ,`receiveTime`= ?  WHERE Id= ? ");
+        $action->bind_param("sssssss", $date, $price, $expire, $size, $remark, $receiveTime, $Id);
         $action->execute();
-        if(!$action->error){
-            return $this->JSONout(array("result"=>"成功"));
-        }
-        else{
-            return $this->JSONout(array("result"=>"失败","reason"=>$sql->error));
+        if (!$action->error) {
+            return $this->JSONout(array("result" => "成功"));
+        } else {
+            return $this->JSONout(array("result" => "失败", "reason" => $sql->error));
         }
     }
 
     //获取所有订单----根据page分页
-    public function getOrder($page){
+    public function getOrder($page)
+    {
         global $sql;
-        $start = ($page -1) * 12;
+        $start = ($page - 1) * 12;
         $order = [];
-        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId` from `orders` ORDER BY `Id` DESC limit $start,12")->fetch_all(1);
-        foreach ($orderInfo as $key=>$val){
-            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$orderInfo[userId]'")->fetch_array(1);
-            array_push($order,["Id"=>$val["Id"],"size"=>$val["size"],"price"=>$val["price"],"position"=>$userInfo["position"],"sexual"=>["sexual"]]);
+        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId` from `orders` ORDER BY `Id` DESC limit $start,12")->fetch_all(MYSQLI_ASSOC);
+        foreach ($orderInfo as $key => $val) {
+            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
+            array_push($order, ["Id" => $val["Id"], "size" => $val["size"], "price" => $val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"]]);
         }
         return $this->JSONout($order);
     }
 
     //获取订单对应的手机号
-    public function getPhone($Id){
+    public function getPhone($Id)
+    {
         global $sql;
-        $userId=$sql->query("select `userId` from `orders` WHERE Id='$Id'");
-        $tel=$sql->query("select `phone` from `user` WHERE `Id`='$userId'")->fetch_row();
+        $action = $sql->prepare("select `toker` from `orders` where Id = ?");
+        $action->bind_param("s",$Id);
+        $action->bind_result($tokerId);
+        $action->execute();
+        $action->fetch();
+        if($tokerId != $_SESSION["UID"]){
+            exit("不是接单用户");
+        }
+        $action->free_result();
+
+        $userId = $sql->query("select `userId` from `orders` WHERE Id='$Id'")->fetch_row()[0];
+        $tel = $sql->query("select `phone` from `user` WHERE `Id`='$userId'")->fetch_row()[0];
         return $this->JSONout($tel);
     }
 
     //获取订单详情 根据订单Id
-    public function getOrderById($Id){
+    public function getOrderById($Id)
+    {
         global $sql;
-        $result=$sql->query("select * from `orders` WHERE Id='$Id'");
-        $order=$result->fetch_array(1);
+        $result = $sql->query("select * from `orders` WHERE Id='$Id'");
+        $order = $result->fetch_array(1);
         return $this->JSONout($order);
     }
 
     //私有方法,接受数组变量,将它转化为JSON字符串返回
-    private function JSONout($str){
-        return json_encode($str,JSON_UNESCAPED_UNICODE);
+    private function JSONout($str)
+    {
+        return json_encode($str, JSON_UNESCAPED_UNICODE);
     }
 }
 

@@ -1,3 +1,8 @@
+<style>
+    html{
+        white-space: pre-wrap;
+    }
+</style>
 <?php
 /**
  * Created by PhpStorm.
@@ -20,7 +25,7 @@ if (isset($_GET["code"])) {
         $expire = $sql->query("select ACTexpires from `user` where Id = $userInfo[Id]")->fetch_row()[0];
         if ($expire <= time()) {
             $url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" . appId . "&grant_type=refresh_token&refresh_token=" . $userInfo[2];
-            $access = json_encode(file_get_contents($url), true);
+            $access = json_decode(file_get_contents($url), true);
             $time = time() + $access["expires_in"];
             $sql->query("update `user` set `AccessToken` = '$access[access_token]',ACTexpires = '$time',`RefreshToken`='$access[refresh_token]' WHERE Id = '$userInfo[0]'");
         }
@@ -34,7 +39,6 @@ if (isset($_GET["code"])) {
     }
     $_SESSION['UID'] = $userInfo["Id"];
     $Cookies_expires = strtotime("+1 year");
-    setcookie("openid", $userInfo["openid"], $Cookies_expires, "/");
+    setcookie("openid", $userInfo["openId"], $Cookies_expires, "/");
     header("location:../index.html");
-
 }
