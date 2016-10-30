@@ -1,6 +1,5 @@
 <?
 /**
- * User interfaces. 
  * @author Fang
  * @see model/user.php
  * @version 1.0.0, 2016.10.30
@@ -35,10 +34,6 @@ switch ($_POST['action']){
 		exit;
 	case 'getUserInfo':
 		$r = $u->getUserInfo($_POST['id']);
-		echo json_encode($r,JSON_UNESCAPED_UNICODE);
-		exit;
-	case 'getNameTelSex':
-		$r = $u->getNameTelSex($_POST['id']);
 		echo json_encode($r,JSON_UNESCAPED_UNICODE);
 		exit;
 	case 'getPublisherByOrder':
