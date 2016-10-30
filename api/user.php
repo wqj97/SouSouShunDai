@@ -20,11 +20,8 @@ switch ($_GET['action']){
 		$r = $u->newUser($_POST['name'],$_POST['sex']);
 		echo json_encode($r,JSON_UNESCAPED_UNICODE);
 		exit;
-	case 'updateNameSex':
-		$u->updateNameSex($_POST['Id'],$_POST['name'],$_POST['sexual']);
-		exit;
-	case 'updateLocation':
-		$u->updateLocation($_POST['Id'],$_POST['location']);
+	case 'edit':
+		$u->updateNameSex($_POST['Id'],$_POST['name'],$_POST['sexual'],$_POST['position']);
 		exit;
 	case 'editPhone':
 		$r = $u->updateTel($_POST['Id'],$_POST['phone']);
