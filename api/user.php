@@ -10,7 +10,7 @@ require_once '../model/base.php';
 global $sql;
 $type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
 $type = $type->fetch_row();
-if ($type[0] != 1) die('<h1>非法操作!</h1>');
+if ($type[0] != 1) exit('<h1>非法操作!</h1>');
 require_once '../model/user.php';
 
 $u = new UserUtils();
@@ -21,19 +21,17 @@ switch ($_POST['action']){
 		echo json_encode($r,JSON_UNESCAPED_UNICODE);
 		exit;
 	case 'updateNameSex':
-		$r = $u->updateNameSex($_POST['id'],$_POST['name'],$_POST['sex']);
-		echo json_encode($r,JSON_UNESCAPED_UNICODE);
+		$u->updateNameSex($_POST['Id'],$_POST['name'],$_POST['sexual']);
 		exit;
 	case 'updateLocation':
-		$r = $u->updateLocation($_POST['id'],$_POST['location']);
+		$u->updateLocation($_POST['Id'],$_POST['location']);
+		exit;
+	case 'editPhone':
+		$r = $u->updateTel($_POST['Id'],$_POST['phone']);
 		echo json_encode($r,JSON_UNESCAPED_UNICODE);
 		exit;
-	case 'updateTel':
-		$r = $u->updateTel($_POST['id'],$_POST['tel']);
-		echo json_encode($r,JSON_UNESCAPED_UNICODE);
-		exit;
-	case 'getUserInfo':
-		$r = $u->getUserInfo($_POST['id']);
+	case 'getUser':
+		$r = $u->getUserInfo($_POST['Id']);
 		echo json_encode($r,JSON_UNESCAPED_UNICODE);
 		exit;
 	case 'getPublisherByOrder':
