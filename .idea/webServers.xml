@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="3caeee19-422d-4443-9925-16b58ff6aac1" name="123.206.71.121" url="http://dq.97qingnian.com">
+      <webServer id="0d245e87-94d9-4f1b-ae92-6929306d5a58" name="123.206.71.121" url="http://123.206.71.121">
         <fileTransfer host="123.206.71.121" port="21" rootFolder="/dq.97qingnian.com">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
