@@ -1,4 +1,3 @@
-html.sublime-project
-html.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 phpmyadmin
-

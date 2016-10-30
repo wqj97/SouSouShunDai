@@ -1,10 +1,10 @@
 <?php
-// namespace Fang;
 require_once 'base.php';
 
 /**
  * Provide methods to control user table (CRUD).
  * @author Fang
+ * @version 1.0.0, 2016-10-30
  */
 class UserUtils
 {
@@ -16,7 +16,6 @@ class UserUtils
 	public function newUser($name,$sex){
 		global $sql;
 		// Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type
-		// $statement = $sql->prepare('INSERT INTO `user` VALUES(0,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL,?,NULL)');
 		$statement = $sql->prepare('INSERT INTO user(name,sexual) VALUES(?,?)');
 		$statement->bind_param($name,$sex);
 		$statement->execute();
@@ -52,7 +51,7 @@ class UserUtils
 	/**
 	 * @param id 		id of user
 	 * @param tel 		new telephone number
-	 * @return true for success, false for fail
+	 * @return if 'result' is 失败, 'reason' is errinfo;
 	 */
 	public function updateTel($id,$tel){
 		global $sql;
@@ -61,54 +60,33 @@ class UserUtils
 			$statement = $sql->prepare('UPDATE `user` SET `phone` = ? WHERE `Id` = ?');
 			$statement->bind_param($tel,$id);
 			$statement->execute();
-			return true;
+			return ['result' => '成功'];
 		} else {
-			return false;
+			return ['result' => '失败', 'reason' => 'Illegal phone number!'];
 		}
 	}
 	
 	/**
 	 * @param id 		id of user
-	 * @return JSON object with an Array, 
-	 *	if 'success' is false, 'content' is errinfo; <br> 
-	 *	if 'success' is true, 'content' is Array (ASSOC).<br>
-	 *	fields: Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type.
+	 * @return if 'result' is 失败, 'reason' is errinfo;
+	 *	else 'result' is array['name','phone','position','sexual'].
 	 */
 	public function getUserInfo($id){
 		global $sql;
-		$statement = $sql->prepare('SELECT * FROM `user` WHERE Id = ?');
+		$statement = $sql->prepare('SELECT name,phone,position,sexual FROM `user` WHERE Id = ?');
 		$statement->bind_param($id);
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return ['success' => false, 'content' => 'No such user!'];
+			return ['result' => '失败', 'reason' => 'No such user!'];
 		else
-			return ['success' => true, 'content' => $row];
+			return ['result' => $row];
 	}
-	
-	/**
-	 * @param id 		id of user
-	 * @return JSON object with an Array, 
-	 *	if 'success' is false, 'content' is errinfo; <br> 
-	 *	if 'success' is true, 'content' is an array containing name,tel and sex.<br>
-	 */
-	public function getNameTelSex($id){
-		global $sql;
-		$statement = $sql->prepare('SELECT name,phone,sexual FROM `user` WHERE Id = ?');
-		$statement->bind_param($id);
-		$resultset = $statement->execute();
-		$row = $resultset->fetch_assoc();
-		if (count($row)!=1)
-			return ['success' => false, 'content' => 'No such user!'];
-		else
-			return ['success' => true, 'content' => [$row['name'],$row['phone'],$row['sexual']]];
-	}
-	
+		
 	/**
 	 * @param orderId 		id of order
-	 * @return JSON object with an Array, 
-	 *	if 'success' is false, 'content' is errinfo; <br> 
-	 *	if 'success' is true, 'content' is publisher id.
+	 * @return if 'result' is 失败, 'reason' is errinfo;
+	 *	else 'result' is publisher id.
 	 */
 	public function getPublisherByOrder($orderId){
 		global $sql;
@@ -117,16 +95,15 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return ['success' => false, 'content' => 'No such order!'];
+			return ['result' => '失败', 'reason' => 'No such order!'];
 		else
-			return ['success' => true, 'content' => $row['userId']];
+			return ['result' => $row['userId']];
 	}
 	
 	/**
 	 * @param orderId 		id of order
-	 * @return JSON object with an Array, 
-	 *	if 'success' is false, 'content' is errinfo; <br> 
-	 *	if 'success' is true, 'content' is courier id.
+	 * @return if 'result' is 失败, 'reason' is errinfo;
+	 *	else 'result' is courier id.
 	 */
 	public function getCourierByOrder($orderId){
 		global $sql;
@@ -135,8 +112,8 @@ class UserUtils
 		$resultset = $statement->execute();
 		$row = $resultset->fetch_assoc();
 		if (count($row)!=1)
-			return ['success' => false, 'content' => 'No such order!'];
+			return ['result' => '失败', 'reason' => 'No such order!'];
 		else
-			return ['success' => true, 'content' => $row['toker']];
+			return ['result' => $row['toker']];
 	}
 }
