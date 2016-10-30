@@ -33,7 +33,7 @@ class UserUtils
 	public function updateNameSexPos($id,$name,$sex,$pos){
 		global $sql;
 		$statement = $sql->prepare('UPDATE `user` SET `name` = ?,`sexual` = ?,`position` = ? WHERE `Id` = ?');
-		$statement->bind_param($name,$sex,$pos,$id);
+		$statement->bind_param("ssss",$name,$sex,$pos,$id);
 		$statement->execute();
 	}
 	
@@ -47,7 +47,7 @@ class UserUtils
 		// Check phone number ...
 		if (preg_match('/^1[3|4|5|8][0-9]\d{8}$/', $tel)){
 			$statement = $sql->prepare('UPDATE `user` SET `phone` = ? WHERE `Id` = ?');
-			$statement->bind_param($tel,$id);
+			$statement->bind_param("ss",$tel,$id);
 			$statement->execute();
 			return ['result' => '成功'];
 		} else {
@@ -62,14 +62,13 @@ class UserUtils
 	 */
 	public function getUserInfo($id){
 		global $sql;
-		$statement = $sql->prepare('SELECT name,phone,position,sexual FROM `user` WHERE Id = ?');
-		$statement->bind_param($id);
-		$resultset = $statement->execute();
-		$row = $resultset->fetch_assoc();
-		if (count($row)!=1)
-			return ['result' => '失败', 'reason' => 'No such user!'];
-		else
-			return ['result' => $row];
+		$statement = $sql->prepare('SELECT `name`,`phone`,`position`,`sexual` FROM `user` WHERE `Id` = ?');
+		$statement->bind_param("s",$id);
+        $statement->bind_result($name,$phone,$position,$sexual);
+		$statement->execute();
+        $statement->fetch();
+        return ["name"=>$name,"phone"=>$phone,"position"=>$position,"sexual"=>$sexual];
+
 	}
 		
 	/**
@@ -77,32 +76,32 @@ class UserUtils
 	 * @return if 'result' is 失败, 'reason' is errinfo;
 	 *	else 'result' is publisher id.
 	 */
-	public function getPublisherByOrder($orderId){
-		global $sql;
-		$statement = $sql->prepare('SELECT userId FROM `orders` WHERE Id = ?');
-		$statement->bind_param($orderId);
-		$resultset = $statement->execute();
-		$row = $resultset->fetch_assoc();
-		if (count($row)!=1)
-			return ['result' => '失败', 'reason' => 'No such order!'];
-		else
-			return ['result' => $row['userId']];
-	}
-	
-	/**
-	 * @param orderId 		id of order
-	 * @return if 'result' is 失败, 'reason' is errinfo;
-	 *	else 'result' is courier id.
-	 */
-	public function getCourierByOrder($orderId){
-		global $sql;
-		$statement = $sql->prepare('SELECT toker FROM `orders` WHERE Id = ?');
-		$statement->bind_param($orderId);
-		$resultset = $statement->execute();
-		$row = $resultset->fetch_assoc();
-		if (count($row)!=1)
-			return ['result' => '失败', 'reason' => 'No such order!'];
-		else
-			return ['result' => $row['toker']];
-	}
+//	public function getPublisherByOrder($orderId){
+//		global $sql;
+//		$statement = $sql->prepare('SELECT userId FROM `orders` WHERE Id = ?');
+//		$statement->bind_param($orderId);
+//		$resultset = $statement->execute();
+//		$row = $resultset->fetch_assoc();
+//		if (count($row)!=1)
+//			return ['result' => '失败', 'reason' => 'No such order!'];
+//		else
+//			return ['result' => $row['userId']];
+//	}
+//
+//	/**
+//	 * @param orderId 		id of order
+//	 * @return if 'result' is 失败, 'reason' is errinfo;
+//	 *	else 'result' is courier id.
+//	 */
+//	public function getCourierByOrder($orderId){
+//		global $sql;
+//		$statement = $sql->prepare('SELECT toker FROM `orders` WHERE Id = ?');
+//		$statement->bind_param($orderId);
+//		$resultset = $statement->execute();
+//		$row = $resultset->fetch_assoc();
+//		if (count($row)!=1)
+//			return ['result' => '失败', 'reason' => 'No such order!'];
+//		else
+//			return ['result' => $row['toker']];
+//	}
 }
