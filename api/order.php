@@ -26,7 +26,7 @@ switch ($_GET['action']){
             echo json_encode($order->getOrderById($_POST["Id"]),JSON_UNESCAPED_UNICODE);
         break;
     case "edit":
-            echo json_encode($order->upOrder($_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"],JSON_UNESCAPED_UNICODE));
+            echo json_encode($order->upOrder($_POST["Id"],"$_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"],JSON_UNESCAPED_UNICODE));
         break;
     case "phone":
             echo json_encode($order->getPhone($_POST["Id"],JSON_UNESCAPED_UNICODE));
