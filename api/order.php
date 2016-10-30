@@ -15,7 +15,7 @@ if ($type[0] != 0) {
 }
 require_once "../model/order.php";
 
-$order = new order();
+$order = new \Wang\order();
 switch ($_GET['action']){
     case "new":
             echo $order->newOrder($_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"]);
@@ -27,7 +27,7 @@ switch ($_GET['action']){
             echo $order->getOrderById($_POST["Id"]);
         break;
     case "edit":
-            echo $order->upOrder($_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"]);
+            echo $order->upOrder($_POST["Id"],$_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"]);
         break;
     case "phone":
             echo $order->getPhone($_POST["Id"]);
