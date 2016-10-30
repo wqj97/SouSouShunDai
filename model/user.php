@@ -27,24 +27,13 @@ class UserUtils
 	 * @param id 		id of user
 	 * @param name 		new name
 	 * @param sex 		new sex
+	 * @param pos 		new postion
 	 * @return void
 	 */
-	public function updateNameSex($id,$name,$sex){
+	public function updateNameSexPos($id,$name,$sex,$pos){
 		global $sql;
-		$statement = $sql->prepare('UPDATE `user` SET `name` = ?,`sexual` = ? WHERE `Id` = ?');
-		$statement->bind_param($name,$sex,$id);
-		$statement->execute();
-	}
-	
-	/**
-	 * @param id 		id of user
-	 * @param name 		new location
-	 * @return void
-	 */
-	public function updateLocation($id,$location){
-		global $sql;
-		$statement = $sql->prepare('UPDATE `user` SET `position` = ? WHERE `Id` = ?');
-		$statement->bind_param($location,$id);
+		$statement = $sql->prepare('UPDATE `user` SET `name` = ?,`sexual` = ?,`position` = ? WHERE `Id` = ?');
+		$statement->bind_param($name,$sex,$pos,$id);
 		$statement->execute();
 	}
 	
