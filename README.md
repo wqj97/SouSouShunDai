@@ -1,4 +1,15 @@
 # 嗖嗖顺带
-一个微信应用
-### This is a private programe
-### we are updating account and make it private
+
+
+## 1. V0.5 2016年10月30日
+1. API基本完成
+2. 前端初次上传
+
+## 2. V0.6 2016年10月31日
+1. API新增接单
+2. API新增短信接口
+3. API新增获取当前用户接口
+4. 新增常量:用户级别(base.php)
+5. 文档更新(API变动)
+
+

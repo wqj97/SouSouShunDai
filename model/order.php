@@ -74,6 +74,32 @@ class order
         return $this->JSONout($order);
     }
 
+//    接单
+    public function take($Id){
+        global $sql;
+
+//        拉取订单信息
+        $date = date("Y.m.d");
+        $userInfo = $sql->query("select count(Id),`type`,`userId` from `orders` where `date` = '$date' and `toker` = $_SESSION[UID]")->fetch_row();
+        if($userInfo[3] == $_SESSION["UID"]){
+//            排出自己接自己的单
+            return $this->JSONout(array("result" => "失败", "reason" => "不能接自己的单"));
+        }
+
+        $type = $userInfo[1];
+        $count = $userInfo[0];
+//        判断接单权限
+
+        if($count >= userLevel[$type]){
+            return $this->JSONout(array("result" => "失败", "reason" => "超过每日接单上限"));
+        }else{
+            $action = $sql->prepare("update `orders` set `toker` = $_SESSION[UID] where Id = ?");
+            $action->bind_param("s",$Id);
+            $action->execute();
+            return $this->JSONout(array("result" => "成功"));
+        }
+    }
+
     //私有方法,接受数组变量,将它转化为JSON字符串返回
     private function JSONout($str)
     {

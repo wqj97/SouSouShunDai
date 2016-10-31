@@ -16,24 +16,25 @@ if ($type[0] != 0) {
 require_once "../model/order.php";
 
 $order = new \Wang\order();
-switch ($_GET['action']){
+switch ($_GET['action']) {
     case "new":
-            echo $order->newOrder($_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"]);
+        echo $order->newOrder($_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"]);
         break;
     case "getAll":
-            echo $order->getOrder($_POST["page"]);
+        echo $order->getOrder($_POST["page"]);
         break;
     case "get":
-            echo $order->getOrderById($_POST["Id"]);
+        echo $order->getOrderById($_POST["Id"]);
         break;
     case "edit":
-            echo $order->upOrder($_POST["Id"],$_POST["date"],$_POST["price"],$_POST["expire"],$_POST["size"],$_POST["remark"],$_POST["receiveTime"]);
+        echo $order->upOrder($_POST["Id"], $_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"]);
         break;
     case "phone":
-            echo $order->getPhone($_POST["Id"]);
+        echo $order->getPhone($_POST["Id"]);
         break;
-
-
+    case "take":
+        echo $order->take($_POST["Id"]);
+        break;
 
 
 }
