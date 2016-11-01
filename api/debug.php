@@ -6,5 +6,5 @@
  * Time: 上午11:46
  */
 session_start();
-$_SESSION["UID"] = 2;
-setcookie("openid","o2NgYwdiseIwOhdKTGSXFrZawK4I",strtotime("+1 year"),"/");
+$_SESSION["UID"] = 4;
+setcookie("openid","o2NgYwVzsdtyXb4oONEla9PvzUNs",strtotime("+1 year"),"/");

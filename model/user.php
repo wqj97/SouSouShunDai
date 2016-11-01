@@ -58,6 +58,12 @@ class UserUtils
 
     }
 
+    public function getMine(){
+        global $sql;
+        $userInfo = $sql->query("select Id,`name`,sexual,`position`,phone,head from `user` where Id = '$_SESSION[UID]'")->fetch_array(1);
+        return $userInfo;
+    }
+
     /**
      * @param orderId        id of order
      * @return if 'result' is 失败, 'reason' is errinfo;
