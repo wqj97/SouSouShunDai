@@ -5,11 +5,11 @@ require_once "base.php";
 class order
 {
     //创建新订单
-    public function newOrder($date, $price, $expire, $size, $remark, $receiveTime)
+    public function newOrder($date, $price, $expire, $size, $remark, $receiveTime,$SMS)
     {
         global $sql;
-        $action = $sql->prepare("insert into orders(`userId`,`date`,`price`,`expire`,`size`,`remark`,`receiveTime`) VALUES (?,?,?,?,?,?,?)");
-        $action->bind_param("sssssss", $_SESSION["UID"], $date, $price, $expire, $size, $remark, $receiveTime);
+        $action = $sql->prepare("insert into orders(`userId`,`date`,`price`,`expire`,`size`,`remark`,`receiveTime`,`expressSMS`) VALUES (?,?,?,?,?,?,?,?)");
+        $action->bind_param("ssssssss", $_SESSION["UID"], $date, $price, $expire, $size, $remark, $receiveTime,$SMS);
         $action->execute();
         if (!$action->error) {
             return $this->JSONout(array("result" => "成功"));
@@ -100,6 +100,13 @@ class order
         }
     }
 
+//  获取自己的订单
+    public function getMine(){
+        global $sql;
+        $resultMineSend = $sql->query("select * from orders where userId = '$_SESSION[UID]'")->fetch_all(1);
+        $resultMineToke = $sql->query("select * from orders where toker = '$_SESSION[UID]'")->fetch_all(1);
+        return $this->JSONout(["我发布的"=>$resultMineSend,"我接的"=>$resultMineToke]);
+    }
     //私有方法,接受数组变量,将它转化为JSON字符串返回
     private function JSONout($str)
     {

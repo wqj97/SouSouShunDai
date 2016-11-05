@@ -18,7 +18,7 @@ require_once "../model/order.php";
 $order = new \Wang\order();
 switch ($_GET['action']) {
     case "new":
-        echo $order->newOrder($_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"]);
+        echo $order->newOrder($_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"],$_POST["SMS"]);
         break;
     case "getAll":
         echo $order->getOrder($_POST["page"]);
@@ -35,6 +35,8 @@ switch ($_GET['action']) {
     case "take":
         echo $order->take($_POST["Id"]);
         break;
-
+    case "getMine":
+        echo $order->getMine();
+        break;
 
 }

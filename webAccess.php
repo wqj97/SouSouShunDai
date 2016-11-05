@@ -19,7 +19,7 @@ if(!isset($_COOKIE["openid"])){
     }
     switch ($_GET["to"]){
         case "index":
-            header("location:index.html");
+            header("location:index.html#/index");
             break;
         case "order":
             header("location:order.html");
