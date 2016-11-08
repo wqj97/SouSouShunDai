@@ -7,6 +7,8 @@
  */
 session_start();
 require_once "../model/base.php";
+error_reporting(E_ERROR);
+
 global $sql;
 $type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
 $type = $type->fetch_row();
@@ -18,6 +20,7 @@ require_once "../model/order.php";
 $order = new \Wang\order();
 switch ($_GET['action']) {
     case "new":
+        isset($_POST["SMS"]) ? $_POST["SMS"] : $_POST["SMS"] = "";
         echo $order->newOrder($_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"],$_POST["SMS"]);
         break;
     case "getAll":
@@ -37,6 +40,15 @@ switch ($_GET['action']) {
         break;
     case "getMine":
         echo $order->getMine();
+        break;
+    case "finish":
+        echo $order->finish($_POST["Id"]);
+        break;
+    case "cancel":
+        require_once "../model/base.php";
+        require_once "../model/pay.php";
+        $pay = new pay();
+        $pay->cancel($_POST["Id"]);
         break;
 
 }

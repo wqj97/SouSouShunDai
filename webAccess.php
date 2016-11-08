@@ -12,7 +12,7 @@ if(!isset($_COOKIE["openid"])){
     header("location:$url");
 }else{
     global $sql;
-    $UID = $sql->query("select Id from `user` where `openid` = '$_COOKIE[openid]'")->fetch_row()[0];
+    $UID = $sql->query("select Id from `user` where `openId` = '$_COOKIE[openid]'")->fetch_row()[0];
     $_SESSION['UID'] = $UID;
     if (!isset($_GET["to"])){
         $_GET["to"] = "index";
