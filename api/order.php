@@ -7,7 +7,7 @@
  */
 session_start();
 require_once "../model/base.php";
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 
 global $sql;
 $type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
@@ -20,7 +20,7 @@ require_once "../model/order.php";
 $order = new \Wang\order();
 switch ($_GET['action']) {
     case "new":
-        isset($_POST["SMS"]) ? $_POST["SMS"] : $_POST["SMS"] = "";
+        isset($_POST["SMS"]) ? $_POST["SMS"] : $_POST["SMS"] = "未填写快递信";
         echo $order->newOrder($_POST["date"], $_POST["price"], $_POST["expire"], $_POST["size"], $_POST["remark"], $_POST["receiveTime"],$_POST["SMS"]);
         break;
     case "getAll":
@@ -47,6 +47,11 @@ switch ($_GET['action']) {
     case "cancel":
         require_once "../model/base.php";
         require_once "../model/pay.php";
+        $toker = $sql->query("select `toker` from `orders` where Id = '$_POST[Id]'")->fetch_row()[0];
+        if($toker){
+            echo json_encode(["result"=>"失败","reason"=>"已经有人接单,不能取消或订单不存在"],256);
+            return;
+        }
         $pay = new pay();
         $pay->cancel($_POST["Id"]);
         break;

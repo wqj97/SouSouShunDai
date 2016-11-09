@@ -26,6 +26,7 @@ class WxPayConfig
 	const MCHID = '1406450002';
 	const KEY = 'TQIblBp7OUJIwdHItZzdedBGpcGc1fsW';
 	const APPSECRET = '986759a218f79dbe22683dfedc94dfa2';
+    const IP = "123.206.71.121";
 	
 	//=======【证书路径设置】=====================================
 	/**

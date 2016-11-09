@@ -45,7 +45,7 @@ class PayNotifyCallBack extends WxPayNotify
 	}
 	private function update($data){
         global $sql;
-        log::INFO("Raw : ". file_get_contents("php://input"));
+        log::INFO("data : ". json_encode($data));
         $sign = $data["out_trade_no"];
         $sql->query("update `orders` set `payId` = '$sign' where `sign` = '$sign'");
     }

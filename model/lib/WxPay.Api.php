@@ -128,6 +128,31 @@ class WxPayApi
         return $result;
     }
 
+
+
+    /**
+     *
+     * 企业支付
+     * @param object $inputObj 输入对象
+     * @param int $timeOut  超时时间
+     * @return object $result
+     */
+
+    public static function payToUser($inputObj, $timeOut = 6)
+    {
+        $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        $inputObj->SetAppid(WxPayConfig::APPID);//公众账号ID
+        $inputObj->SetMch_id(WxPayConfig::MCHID);//商户号
+        $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+        $inputObj->SetSign();//签名
+        $xml = $inputObj->ToXml();
+        $startTimeStamp = self::getMillisecond();//请求开始时间
+        $response = self::postXmlCurl($xml, $url, true, $timeOut);
+        $result = WxPayResults::Init($response);
+        self::reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+        return $result;
+    }
+
     /**
      *
      * 申请退款，WxPayRefund中out_trade_no、transaction_id至少填一个且
@@ -158,14 +183,12 @@ class WxPayApi
         $inputObj->SetAppid(WxPayConfig::APPID);//公众账号ID
         $inputObj->SetMch_id(WxPayConfig::MCHID);//商户号
         $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
-
         $inputObj->SetSign();//签名
         $xml = $inputObj->ToXml();
         $startTimeStamp = self::getMillisecond();//请求开始时间
         $response = self::postXmlCurl($xml, $url, true, $timeOut);
         $result = WxPayResults::Init($response);
         self::reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
-        print_r($result);
         return $result;
     }
 
@@ -518,6 +541,7 @@ class WxPayApi
             //不做任何处理
         }
     }
+
 
     /**
      * 以post方式提交xml到对应的接口url

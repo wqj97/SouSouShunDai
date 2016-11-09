@@ -61,7 +61,7 @@ class pay
         $input->SetRefund_fee($fee);
         $input->SetOp_user_id("1406450002");
         WxPayApi::refund($input);
-
+        $sql->query("update `orders` set finish = 2 where Id = '$Id'");
     }
 
     static public function payToUser()
