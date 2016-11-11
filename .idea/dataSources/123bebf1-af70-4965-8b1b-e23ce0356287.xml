@@ -73,7 +73,7 @@
       <data-type>mediumtext|0</data-type>
     </column>
     <column id="26" parent="11" name="finish">
-      <comment>订单完成0未完成,1完成</comment>
+      <comment>订单完成0未完成,1完成,2取消</comment>
       <data-type>int(2)|0</data-type>
       <default-expression>&apos;0&apos;</default-expression>
     </column>

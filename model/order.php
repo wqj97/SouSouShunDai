@@ -15,9 +15,10 @@ class order
         $action->execute();
         $Id = $action->insert_id;
         if (!$action->error) {
-            $No = \pay::getPay($price * 100);
+            $No = \pay::getPay($price);
             $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
             echo $sql->error;
+            $this->watcher(alertUser, $Id);
         } else {
             return $this->JSONout(array("result" => "失败", "reason" => $sql->error));
         }
@@ -108,6 +109,7 @@ class order
             $action = $sql->prepare("update `orders` set `toker` = $_SESSION[UID] where Id = ?");
             $action->bind_param("s", $Id);
             $action->execute();
+            $this->sendMessage($Id, $userInfo[1]);
             return $this->JSONout(array("result" => "成功"));
         }
     }
@@ -140,7 +142,7 @@ class order
         $input = new \WxPayToUser();
         $input->Setopenid($openId);
         $fee = $orderInfo[1] * tax * 100;
-        if($fee <= 100){
+        if ($fee <= 100) {
             $fee = 100;
         }
         $input->Setamount($fee);
@@ -149,13 +151,168 @@ class order
         require_once "log.php";
         $logHandler = new \CLogFileHandler("../logs/" . date('Y-m-d') . '.log');
         $log = \Log::Init($logHandler, 15);
-        \log::INFO("企业支付 : result : ".json_encode($result,256));
+        \log::INFO("企业支付 : result : " . json_encode($result, 256));
         if ($result["result_code"] == "SUCCESS") {
             $sql->query("update `orders` set `finish` = 1,`hasPaid` = 1 where Id = '$Id'");
-        }else{
-            return $this->JSONout(array("result" => "失败","reason"=>$result["err_code_des"]));
+        } else {
+            return $this->JSONout(array("result" => "失败", "reason" => $result["err_code_des"]));
         }
+        $this->sendFinishMessage($Id, $openId);
         return $this->JSONout(array("result" => "成功"));
+
+    }
+
+//    微信提醒
+    /**
+     * @param int $Id 订单Id
+     * @param int $userId 接受消息的用户Id
+     * @return bool 处理结果
+     */
+    public function sendMessage($Id, $userId)
+    {
+        global $sql;
+        $openId = $sql->query("select `openId` from `user` where Id = '$userId'")->fetch_row()[0];
+        $content = '{
+           "touser":"' . $openId . '",
+           "template_id":"UtIG56r5h_Fv394C6C1mMuc2RWwSs-n0j2yTnH1OJ_c",
+           "url":"http://dq.97qingnian.com/index.html#/state",            
+           "data":{
+                   "first": {
+                       "value":"您的订单已有人接单！",
+                       "color":"#333"
+                   },
+                   "keyword1":{
+                       "value":"' . $Id . '",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":"' . date("H点i分s秒") . '",
+                       "color":"#173177"
+                   },
+                   "remark":{
+                       "value":"如果有任何疑问,直接回复我们会及时解答",
+                       "color":"#333"
+                   }
+           }
+       }';
+        require_once "wxControl.php";
+        $ACT = \wxControl::getAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
+        $opts = array('http' =>
+            array(
+
+                'method' => 'POST',
+
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+
+                'content' => $content
+
+            )
+        );
+        $context = stream_context_create($opts);
+        return file_get_contents($url, false, $context);
+//        return true;
+
+    }
+
+    /**
+     * @param int $Id 订单Id
+     * @param int $userId 用户Id
+     * @return void
+     */
+    private function sendFinishMessage($Id, $userId)
+    {
+        $content = '{
+           "touser":"' . $userId . '",
+           "template_id":"YNdcfpSLmlQ1N3R2AgPIDcmUjGC7LOi27g_lMR6ULUM",
+           "url":"http://dq.97qingnian.com/index.html#/state",            
+           "data":{
+                   "first": {
+                       "value":"您的代取已经确认收货！",
+                       "color":"#333"
+                   },
+                   "OrderSn":{
+                       "value":"' . $Id . '",
+                       "color":"#173177"
+                   },
+                   "OrderStatus": {
+                       "value":"已经确认收货,请查收您的钱包",
+                       "color":"#173177"
+                   },
+                   "remark":{
+                       "value":"如果有任何疑问,直接回复我们会及时解答",
+                       "color":"#333"
+                   }
+           }
+       }';
+        require_once "wxControl.php";
+        $ACT = \wxControl::getAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
+        $opts = array('http' =>
+            array(
+
+                'method' => 'POST',
+
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+
+                'content' => $content
+
+            )
+        );
+        $context = stream_context_create($opts);
+        file_get_contents($url, false, $context);
+//        return true;
+    }
+
+    /**
+     * @param array $Ids 接受名单(openid)
+     * @param int $Id 订单Id
+     * @return void
+     */
+
+    public function watcher($Ids, $Id)
+    {
+        foreach ($Ids as $key => $val) {
+            $content = '{
+           "touser":"' . $val . '",
+           "template_id":"YNdcfpSLmlQ1N3R2AgPIDcmUjGC7LOi27g_lMR6ULUM",
+           "url":"http://dq.97qingnian.com/index.html#/index",            
+           "data":{
+                   "first": {
+                       "value":"有人发布了新的订单！",
+                       "color":"#333"
+                   },
+                   "OrderSn":{
+                       "value":"' . $Id . '",
+                       "color":"#173177"
+                   },
+                   "OrderStatus": {
+                       "value":"有人发布了新的订单",
+                       "color":"#173177"
+                   },
+                   "remark":{
+                       "value":"通知开发人员:'.count($Ids).'人",
+                       "color":"#333"
+                   }
+           }
+       }';
+            require_once "wxControl.php";
+            $ACT = \wxControl::getAccessToken();
+            $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
+            $opts = array('http' =>
+                array(
+
+                    'method' => 'POST',
+
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+
+                    'content' => $content
+
+                )
+            );
+            $context = stream_context_create($opts);
+            file_get_contents($url, false, $context);
+        }
 
     }
 

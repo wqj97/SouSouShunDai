@@ -55,5 +55,8 @@ switch ($_GET['action']) {
         $pay = new pay();
         $pay->cancel($_POST["Id"]);
         break;
+    case "count":
+        $count =  $sql->query("select count(Id) from orders")->fetch_row()[0];
+        echo json_encode(["result"=>"成功","count"=>"$count"],256);
 
 }

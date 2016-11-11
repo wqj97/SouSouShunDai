@@ -40,5 +40,5 @@ if (isset($_GET["code"])) {
     $_SESSION['UID'] = $userInfo["Id"];
     $Cookies_expires = strtotime("+1 year");
     setcookie("openid", $userInfo["openId"], $Cookies_expires, "/");
-    header("location:../index.html");
+    header("location:../index.html#/index");
 }

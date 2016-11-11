@@ -18,3 +18,4 @@ define("AppSecret","986759a218f79dbe22683dfedc94dfa2");
 define("redirectURL","http%3a%2f%2fdq.97qingnian.com%2fapi%2fgetAccess.php");
 define("userLevel",[3,10,9999]);
 define("tax",0.9);
+define("alertUser",["o2NgYwdiseIwOhdKTGSXFrZawK4I","o2NgYwZNncz3EtcAxEKvChgVt6GU","o2NgYwVzsdtyXb4oONEla9PvzUNs","o2NgYwQqKEx19Mca9T_dt14YYtqI","o2NgYwbgl8vX8Jw_k7XGOIdtlj8M","o2NgYwV2OmouJ3_vOLh0ZX-oqB3Y"]);

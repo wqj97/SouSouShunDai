@@ -8,11 +8,10 @@
 session_start();
 require_once "../model/base.php";
 global $sql;
-$type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
-$type = $type->fetch_row();
-if ($type[0] != 0) {
-    exit("<h1 style='color: red'>非法操作!</h1>");
+if(!isset($_SESSION["UID"])){
+    exit(json_encode(["result"=>"失败","reason"=>"授权失败"],256));
 }
+
 require_once "../model/SMS.php";
 $sms = new \Wan\SMS();
 

@@ -26,7 +26,7 @@ class pay
         $input->SetAttach("定金支付");
         $sign = WxPayConfig::MCHID . date("YmdHis");
         $input->SetOut_trade_no($sign);
-        $input->SetTotal_fee($fee);
+        $input->SetTotal_fee($fee * 100);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("定金");

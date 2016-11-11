@@ -39,4 +39,13 @@ switch ($action) {
           ";
         $pay->getPay(1);
         echo "}</script>";
+        break;
+    case "message":
+        require_once "../model/order.php";
+        $order = new \Wang\order();
+        echo $order->sendMessage(19,20);
+        break;
+    case "act":
+        require_once "../model/wxControl.php";
+        echo wxControl::getAccessToken();
 }
