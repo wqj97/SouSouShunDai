@@ -53,7 +53,7 @@ switch ($_GET['action']) {
             return;
         }
         $pay = new pay();
-        $pay->cancel($_POST["Id"]);
+        echo $pay->cancel($_POST["Id"]);
         break;
     case "count":
         $count =  $sql->query("select count(Id) from orders")->fetch_row()[0];

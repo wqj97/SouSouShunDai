@@ -54,6 +54,7 @@ class pay
         if ($userId != $_SESSION["UID"]) {
             return $this->toJSON(["result" => "失败", "reason" => "授权失败"]);
         }
+        $fee = $fee * 100;
         $input = new WxPayRefund();
         $input->SetOut_trade_no($payId);
         $input->SetOut_refund_no($Id);
@@ -62,6 +63,7 @@ class pay
         $input->SetOp_user_id("1406450002");
         WxPayApi::refund($input);
         $sql->query("update `orders` set finish = 2 where Id = '$Id'");
+        return $this->toJSON(["result" => "成功"]);
     }
 
     static public function payToUser()

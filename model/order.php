@@ -18,7 +18,7 @@ class order
             $No = \pay::getPay($price);
             $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
             echo $sql->error;
-            $this->watcher(alertUser, $Id);
+//            $this->watcher(alertUser, $Id);
         } else {
             return $this->JSONout(array("result" => "失败", "reason" => $sql->error));
         }
@@ -44,15 +44,41 @@ class order
         global $sql;
         $start = ($page - 1) * 12;
         $order = [];
-        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId` from `orders` where `toker` is NULL and `payId` != 0 ORDER BY `Id` DESC limit $start,12")->fetch_all(MYSQLI_ASSOC);
+        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS` from `orders` where `toker` is NULL and `payId` != 0 and `finish` = 0 ORDER BY `Id` DESC limit $start,12")->fetch_all(MYSQLI_ASSOC);
         foreach ($orderInfo as $key => $val) {
             $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
-            array_push($order, ["Id" => $val["Id"], "size" => $val["size"], "price" => $val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"]]);
+            $sms = $val["expressSMS"];
+            preg_match("/如风达|EMS|天天|百世|宅急送|中通|汇通|韵达|申通|京东|圆通|顺丰|德邦|菜鸟驿站/", $sms, $sms);
+            if (!isset($sms[0])) {
+                $sms[0] = $val["expressSMS"];
+                $len = strlen($sms[0]);
+                if($len >= 5){
+                    $len = 5;
+                }
+                $sms[0] = mb_substr($sms[0], 0, $len);
+            }
+            array_push($order, ["Id" => $val["Id"], "size" => $val["size"], "price" => $val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"], "SMS" => $sms[0]]);
         }
-        return $this->JSONout($order);
+        $usedorder = [];
+        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS` from `orders` where `finish` = 1 order by Id desc limit 6")->fetch_all(1);
+        foreach ($orderInfo as $key => $val) {
+            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
+            $sms = $val["expressSMS"];
+            preg_match("/如风达|EMS|天天|百世|宅急送|中通|汇通|韵达|申通|京东|圆通|顺丰|德邦|菜鸟驿站/", $sms, $sms);
+            if (!isset($sms[0])) {
+                $sms[0] = $val["expressSMS"];
+                $len = strlen($sms[0]);
+                if($len >= 5){
+                    $len = 5;
+                }
+                $sms[0] = mb_substr($sms[0], 0, $len);
+            }
+            array_push($usedorder, ["Id" => $val["Id"], "size" => $val["size"], "price" => $val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"], "SMS" => $sms[0]]);
+        }
+        return $this->JSONout([$order, $usedorder]);
     }
 
-    private function recoverOrder()
+    public function recoverOrder()
     {
         global $sql;
         $sql->query("delete from orders where `payId` = 0");
@@ -83,6 +109,17 @@ class order
         global $sql;
         $result = $sql->query("select * from `orders` WHERE Id='$Id'");
         $order = $result->fetch_array(1);
+        $sms = $order["expressSMS"];
+        preg_match("/如风达|EMS|天天|百世|宅急送|中通|汇通|韵达|申通|京东|圆通|顺丰|德邦|菜鸟驿站|小树林|奥克米|软件园/", $sms, $sms);
+        if (!isset($sms[0])) {
+            $sms[0] = $order["expressSMS"];
+            $len = strlen($sms[0]);
+            if($len >= 5){
+                $len = 5;
+            }
+            $sms[0] = mb_substr($sms[0], 0, $len);
+        }
+        $order["expressSMS"] = $sms[0];
         return $this->JSONout($order);
     }
 
@@ -92,19 +129,23 @@ class order
         global $sql;
 
 //        拉取订单信息
-        $userInfo = $sql->query("select COUNT(Id),`userId`,`toker` from `orders` where Id = '$Id'")->fetch_row();
-        if ($userInfo[2]) {
+        $userInfo = $sql->query("select `userId`,`toker` from `orders` where Id = '$Id'")->fetch_row();
+        if ($userInfo[1]) {
             return $this->JSONout(array("result" => "失败", "reason" => "订单已经被别人接啦"));
         }
-        if ($userInfo[1] == $_SESSION["UID"]) {
+        if ($userInfo[0] == $_SESSION["UID"]) {
 //            排出自己接自己的单
             return $this->JSONout(array("result" => "失败", "reason" => "不能接自己的单"));
         }
-        $type = $sql->query("select `type` from `user` where Id = '$_SESSION[UID]'")->fetch_row()[0];
+        $type = $sql->query("select `type`,`position`,`phone` from `user` where Id = '$_SESSION[UID]'")->fetch_row();
+        if(!isset($type[1]) || !isset($type[2])){
+            return $this->JSONout(array("result" => "失败", "reason" => "请完善个人信息"));
+        }
 //        判断接单权限
-
-        if ($userInfo[0] >= userLevel[$type]) {
-            return $this->JSONout(array("result" => "失败", "reason" => "超过每日接单上限"));
+        $date = date("Y.m.d");
+        $count = $sql->query("select count(Id) from `orders` where `toker` = '$_SESSION[UID]' and `date` = '$date'")->fetch_row()[0];
+        if ($count >= userLevel[$type[0]]) {
+            return $this->JSONout(array("result" => "失败", "reason" => "超过每日接单上限(今日红包雨每人仅限一单~)"));
         } else {
             $action = $sql->prepare("update `orders` set `toker` = $_SESSION[UID] where Id = ?");
             $action->bind_param("s", $Id);
@@ -118,8 +159,8 @@ class order
     public function getMine()
     {
         global $sql;
-        $resultMineSend = $sql->query("select * from orders where userId = '$_SESSION[UID]' ORDER BY `finish`")->fetch_all(1);
-        $resultMineToke = $sql->query("select * from orders where toker = '$_SESSION[UID]'ORDER BY `finish`")->fetch_all(1);
+        $resultMineSend = $sql->query("select * from orders where userId = '$_SESSION[UID]' and `payId` != 0 ORDER BY `finish`,Id desc")->fetch_all(1);
+        $resultMineToke = $sql->query("select * from orders where toker = '$_SESSION[UID]'ORDER BY `finish`,Id desc")->fetch_all(1);
         return $this->JSONout(["我发布的" => $resultMineSend, "我接的" => $resultMineToke]);
     }
 
@@ -127,7 +168,6 @@ class order
     public function finish($Id)
     {
         require_once "lib/WxPay.Api.php";
-        $this->recoverOrder();
         global $sql;
         $hasPay = $sql->query("select `hasPaid` from `orders` where Id = '$Id'")->fetch_row()[0];
         if ($hasPay) {
@@ -265,13 +305,17 @@ class order
     }
 
     /**
+     * @param object $data 订单obj
      * @param array $Ids 接受名单(openid)
-     * @param int $Id 订单Id
      * @return void
      */
 
-    public function watcher($Ids, $Id)
+    public static function watcher($data, $Ids)
     {
+        $time = $data["time_end"];
+        $hour = substr($time,8,2);
+        $minute = substr($time,10,2);
+        $second = substr($time,12,2);
         foreach ($Ids as $key => $val) {
             $content = '{
            "touser":"' . $val . '",
@@ -283,19 +327,21 @@ class order
                        "color":"#333"
                    },
                    "OrderSn":{
-                       "value":"' . $Id . '",
+                       "value":"' .$data["out_trade_no"].'",
                        "color":"#173177"
                    },
-                   "OrderStatus": {
-                       "value":"有人发布了新的订单",
+        "OrderStatus": {
+        "value":"有人发布了新的订单",
                        "color":"#173177"
                    },
                    "remark":{
-                       "value":"通知开发人员:'.count($Ids).'人",
+        "value":"订单价格: '. ($data["total_fee"] / 100) .' 元,\\n发布时间: '.$hour.'时'.$minute.'分'.$second.'秒 \\n已通知消化团队:'.count($Ids).'人",
                        "color":"#333"
                    }
            }
-       }';
+}
+
+';
             require_once "wxControl.php";
             $ACT = \wxControl::getAccessToken();
             $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
@@ -304,7 +350,7 @@ class order
 
                     'method' => 'POST',
 
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'header' => 'Content - type: application / x - www - form - urlencoded',
 
                     'content' => $content
 
