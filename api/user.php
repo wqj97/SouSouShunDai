@@ -8,11 +8,10 @@
 session_start();
 require_once '../model/base.php';
 global $sql;
-$type = $sql->query("select `type` from `user` where Id = $_SESSION[UID]");
-$type = $type->fetch_row();
-if ($type[0] != 0) exit('<h1>非法操作!</h1>');
 require_once '../model/user.php';
-
+if(empty($_SESSION["UID"])){
+    exit (json_encode(["result"=>"失败","reason"=>"授权失败"],256));
+}
 $u = new UserUtils();
 
 switch ($_GET['action']){

@@ -32,6 +32,9 @@ class PayNotifyCallBack extends WxPayNotify
 	//重写回调处理函数
 	public function NotifyProcess($data, &$msg)
 	{
+        if(!json_encode($data)){
+            return true;
+        }
         $this->update($data);
 
 		$notfiyOutput = array();

@@ -21,9 +21,6 @@ if(!isset($_COOKIE["openid"])){
         case "index":
             header("location:index.html#/index");
             break;
-        case "order":
-            header("location:order.html");
-            break;
         case "back":
             echo("<script>history.go(-1)</script>");
             break;

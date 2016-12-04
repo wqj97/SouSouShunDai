@@ -20,25 +20,26 @@ if (isset($_GET["code"])) {
     if (isset($access["errcode"])) {
         header("location:../webAccess.php");
     }
-    $userInfo = $sql->query("select Id,openId,RefreshToken from `user` where `openId` = '$access[openid]'")->fetch_array();
+    $userInfo = $sql->query("select Id,openId from `user` where `openId` = '$access[openid]'")->fetch_array(1);
     if ($userInfo) {
         $expire = $sql->query("select ACTexpires from `user` where Id = $userInfo[Id]")->fetch_row()[0];
         if ($expire <= time()) {
-            $url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" . appId . "&grant_type=refresh_token&refresh_token=" . $userInfo[2];
+            $url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=".appId."&grant_type=refresh_token&refresh_token=".$access["refresh_token"];
             $access = json_decode(file_get_contents($url), true);
             $time = time() + $access["expires_in"];
-            $sql->query("update `user` set `AccessToken` = '$access[access_token]',ACTexpires = '$time',`RefreshToken`='$access[refresh_token]' WHERE Id = '$userInfo[0]'");
+            $url = "https://api.weixin.qq.com/sns/userinfo?access_token=$access[access_token]&openid=$access[openid]&lang=zh_CN";
+            $user = json_decode(file_get_contents($url), true);
+            $sql->query("update `user` set `AccessToken` = '$access[access_token]',ACTexpires = '$time',`name`='$user[nickname]',`head` = '$user[headimgurl]' WHERE Id = '$userInfo[Id]'");
         }
     } else {
         $url = "https://api.weixin.qq.com/sns/userinfo?access_token=$access[access_token]&openid=$access[openid]&lang=zh_CN";
         $userInfo = json_decode(file_get_contents($url), true);
         $time = time() + $access["expires_in"];
-        $sql->query("insert into `user` (`name`,`openId`,`AccessToken`,`ACTexpires`,`RefreshToken`,`head`) VALUE ('$userInfo[nickname]','$userInfo[openid]','$access[access_token]','$time','$access[refresh_token]','$userInfo[headimgurl]')");
-        $userInfo["Id"] = $sql->query("select max(Id) from `user`")->fetch_row()[0];
-//        echo $sql->error;
+        $sql->query("insert into `user` (`name`,`openId`,`AccessToken`,`ACTexpires`,`head`) VALUE ('$userInfo[nickname]','$userInfo[openid]','$access[access_token]','$time','$userInfo[headimgurl]')");
+        $userInfo["Id"] = $sql->insert_id;
     }
     $_SESSION['UID'] = $userInfo["Id"];
-    $Cookies_expires = strtotime("+1 year");
-    setcookie("openid", $userInfo["openId"], $Cookies_expires, "/");
+    $Cookies_expires = strtotime("+7 day");
+    setcookie("openid", isset($userInfo["openId"]) ? $userInfo["openId"] : $userInfo["openid"], $Cookies_expires, "/");
     header("location:../index.html#/index");
 }

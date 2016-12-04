@@ -44,6 +44,9 @@ class SMS
         $userInfo = $sql->query("select `name` from `user` where Id = '$_SESSION[UID]'")->fetch_row()[0];
 
 //        发送信息
+        if($userInfo == ""){
+            $userInfo = "未填写";
+        }
         $this->aliSend($phone,$userInfo,$code);
 
         return $this->toJSON(["result"=>"成功","reason"=>"$action->insert_id"]);
@@ -78,7 +81,8 @@ class SMS
         $action->free_result();
         return ['result' => '成功'];
     }
-    private function aliSend($phone,$name,$code){
+    public function aliSend($phone,$name,$code){
+        $name = str_replace("."," ",$name);
         require_once "aliSDK/TopSdk.php";
         $c = new \TopClient();
         $c ->appkey = "23488407" ;
@@ -87,10 +91,11 @@ class SMS
         $req ->setExtend( "" );
         $req ->setSmsType( "normal" );
         $req ->setSmsFreeSignName( "嗖嗖顺带" );
-        $req ->setSmsParam( "{name:'$name',number:'$code',expire:'10分钟'}" );
+        $req ->setSmsParam("{name:'$name',number:'$code',expire:'10分钟'}" );
         $req ->setRecNum( $phone );
         $req ->setSmsTemplateCode( "SMS_25000030" );
         $resp = $c ->execute( $req );
+        return $resp;
     }
 
     private function toJSON($array){

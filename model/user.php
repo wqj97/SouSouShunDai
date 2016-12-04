@@ -16,7 +16,7 @@ class UserUtils
     public function newUser($name, $sex)
     {
         global $sql;
-        // Id,name,phone,pwd,openId,AccessToken,RefreshToken,ACTexpires,position,sexual,type
+        // Id,name,phone,pwd,openId,AccessToken,ACTexpires,position,sexual,type
         $statement = $sql->prepare('INSERT INTO user(`name`,`sexual`) VALUES(?,?)');
         $statement->bind_param($name, $sex);
         $statement->execute();
