@@ -32,15 +32,15 @@ define("alertUser", [
     "o2NgYwW2ET2Z0fAEXE6JAo51nS-M"
 ]);
 //define("alertUser",[]);
-//define("admin",[
-//    "o2NgYwdiseIwOhdKTGSXFrZawK4I",
-//    "o2NgYwZNncz3EtcAxEKvChgVt6GU",
-//    "o2NgYwVzsdtyXb4oONEla9PvzUNs",
-//    "o2NgYwQqKEx19Mca9T_dt14YYtqI",
-//    "o2NgYwbgl8vX8Jw_k7XGOIdtlj8M",
-//    "o2NgYwV2OmouJ3_vOLh0ZX-oqB3Y",
-//    "o2NgYwZzMC2Em6QciaxQexe2bn0Y"
-//]);
+define("admin",[
+    "o2NgYwdiseIwOhdKTGSXFrZawK4I",
+    "o2NgYwZNncz3EtcAxEKvChgVt6GU",
+    "o2NgYwVzsdtyXb4oONEla9PvzUNs",
+    "o2NgYwQqKEx19Mca9T_dt14YYtqI",
+    "o2NgYwbgl8vX8Jw_k7XGOIdtlj8M",
+    "o2NgYwV2OmouJ3_vOLh0ZX-oqB3Y",
+    "o2NgYwZzMC2Em6QciaxQexe2bn0Y"
+]);
 define("expressLTD",
     "/中通|顺丰|申通|圆通|百事|韵达|天天|中国邮政|EMS|ems|宅急送|德邦|全峰|百世汇通|百世快递/"
 );

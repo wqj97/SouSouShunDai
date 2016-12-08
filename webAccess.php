@@ -8,7 +8,7 @@
 session_start();
 require_once "model/base.php";
 if(!isset($_COOKIE["openid"])){
-    $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".appId."&redirect_uri=".redirectURL."&response_type=code&scope=snsapi_userinfo#wechat_redirect";
+    $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".appId."&redirect_uri=".redirectURL."&response_type=code&scope=snsapi_userinfo#wechat_redirect&STATE=phone";
     header("location:$url");
 }else{
     global $sql;
@@ -26,6 +26,9 @@ if(!isset($_COOKIE["openid"])){
             break;
         case "state":
             header("location:index.html#/state");
+            break;
+        case "phone":
+            header("location:index.html#/profile/phone");
             break;
     }
 }

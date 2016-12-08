@@ -5,12 +5,12 @@
  * Date: 2016/12/6
  * Time: 下午6:55
  */
-//error_reporting(2048);
+error_reporting(2048);
 require_once "../model/base.php";
 global $sql;
-$action = $sql->prepare("SELECT `head`,`discountActived`,`discount` FROM user WHERE `phone` = ?");
+$action = $sql->prepare("SELECT `head`,`discountActived`,`discount`,`openId` FROM user WHERE `phone` = ?");
 $action->bind_param("s", $_GET["phone"]);
-$action->bind_result($userHead, $discountActived,$discount);
+$action->bind_result($userHead, $discountActived,$discount,$openId);
 $action->execute();
 $action->fetch();
 $action->free_result();
@@ -18,10 +18,62 @@ if(empty($userHead)){
     $userHead = "/logo.png";
 }
 if ($discountActived != 1) {
-    $action = $sql->prepare("UPDATE `user` SET `discount` = 1 WHERE `phone` = ?");
+    $action = $sql->prepare("UPDATE `user` SET `discount` = 1,`discountActived` = 1 WHERE `phone` = ? and `discount` is NULL ");
     $action->bind_param("s", $_GET["phone"]);
     $action->execute();
     $action->free_result();
+}
+sendFinishMessage();
+function sendFinishMessage()
+{
+    if(!empty($discount)){
+        return;
+    }
+    global $sql;
+    $userInfo = $sql->query("select `name`,`openId` from `user` where `phone` = '$_GET[phone]'")->fetch_row();
+    $content = '{
+           "touser":"' . $userInfo[1] . '",
+           "template_id":"WS6-eKvp-FT8mZA12o8znTgugM46X8tMwxmjoNz7RFw",
+           "url":"http://dq.97qingnian.com/webAccess.php",            
+           "data":{
+                   "first": {
+                       "value":"三元代金券已到账!!!！",
+                       "color":"#333"
+                   },
+                   "toName":{
+                       "value":"' . $userInfo[0] . '",
+                       "color":"#173177"
+                   },
+                   "gift": {
+                       "value":"三元代金券",
+                       "color":"#173177"
+                   },
+                   "time": {
+                       "value":"'.date("Y.m.d H:i:s").'",
+                       "color":"#173177"
+                   },
+                   "remark":{
+                       "value":"在付款的时候可以减少3元~少于三元按三元减免哦~\\n微信限制,每笔最低0.01元~",
+                       "color":"#333"
+                   }
+           }
+       }';
+    require_once "../model/wxControl.php";
+    $ACT = \wxControl::getAccessToken();
+    $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
+    $opts = array('http' =>
+        array(
+
+            'method' => 'POST',
+
+            'header' => 'Content-type: application/x-www-form-urlencoded',
+
+            'content' => $content
+
+        )
+    );
+    $context = stream_context_create($opts);
+    file_get_contents($url, false, $context);
 }
 ?>
 <!doctype html>
@@ -49,7 +101,7 @@ if ($discountActived != 1) {
             justify-content: center;
             align-items: center;
             flex-direction:column;
-            background: #54c8ff;
+            background: #75ddff;
             font-size: 62.5%;
         }
         .logo img{
@@ -80,7 +132,7 @@ if ($discountActived != 1) {
         .main-user-head {
             height: auto;
             margin-bottom: -5px;
-
+            background: #fff;
         }
 
         .main-user-head img {
@@ -128,13 +180,18 @@ if ($discountActived != 1) {
 if (isset($_GET["phone"])) {
     echo '<div class="main"><div class="main-head">';
     if ($discount) {
-        echo "您已领取过 <span style=\"color: #ffe90d;font-weight: bold;font-size: 2rem;\">3</span> 元免单";
+        echo "您<span style=\"font-weight: bold;font-size: 2rem;\">已经</span>领取过 <span style=\"color: #ffe90d;font-weight: bold;font-size: 2rem;\">3</span> 元免单";
+        echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击前往微信</div></div>';
+
     } elseif ($userHead == "/logo.png"){
         echo "这个手机号还没有注册";
+        echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击去嗖嗖顺带完善个人信息</div></div>';
+
     }else {
         echo "成功领取 <span style=\"color: #ffe90d;font-weight: bold;font-size: 2rem;\">3</span> 元免单";
+        echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击前往微信</div></div>';
+
     }
-    echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击前往微信</div></div>';
 }else{
     echo '<div class="main">
     <div class="main-head">输入手机号领取 <span style="color: #ffe90d;font-weight: bold;font-size: 2rem;">3</span> 元免单</div>
@@ -144,7 +201,8 @@ if (isset($_GET["phone"])) {
 }
 ?>
 <div class="goByself" style="display: none">
-    <div class="main-head">如果您看到这个劳驾您手动打开微信~</div>
+    <div class="main-head">如果您看到这个劳驾您手动打开微信</div>
+    <div class="main-user-head"><img src="/logo.png"></div>
     <div class="main-accept">嗖嗖顺带等你哦</div>
 </div>
 <script>

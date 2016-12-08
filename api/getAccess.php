@@ -41,5 +41,5 @@ if (isset($_GET["code"])) {
     $_SESSION['UID'] = $userInfo["Id"];
     $Cookies_expires = strtotime("+7 day");
     setcookie("openid", isset($userInfo["openId"]) ? $userInfo["openId"] : $userInfo["openid"], $Cookies_expires, "/");
-    header("location:../index.html#/index");
+    header("location:../index.html#/profile/phone");
 }

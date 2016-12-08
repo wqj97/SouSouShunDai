@@ -432,6 +432,7 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单已经在协商,不能再重新进行协商"]);
                 }
                 $sql->query("update `orders` set `consulting` = 0 where Id = '$Id'");
+                $this->consultingMessage($orderInfo[2],0,$Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "1";
@@ -460,10 +461,13 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单已经在协商,不能再重新进行协商"]);
                 }
                 $sql->query("update `orders` set `consulting` = 2 where Id = '$Id'");
+                $this->consultingMessage($orderInfo[2],2,$Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "3":
+                $orderInfo = $sql->query("select `toker` from `orders` where Id = '$Id'")->fetch_row();
                 $sql->query("update `orders` set `toker` = null,`consulting`=null where Id = '$Id'");
+                $this->consultingMessage($orderInfo[0],3,$Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "4":
@@ -478,6 +482,11 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单还未接单"]);
                 }
                 $sql->query("update `orders` set `consulting` = 4 where Id = '$Id'");
+                $this->consultingMessage($orderInfo[1],4,$Id);
+                $this->consultingMessage($orderInfo[2],4,$Id);
+                foreach (admin as $key => $val){
+                    $this->consultingMessage($val,5,$Id);
+                }
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "5":
@@ -491,8 +500,72 @@ class order
         }
     }
 
-//    微信提醒
     /**
+     * @param $userId int 接收人Id
+     * @param $type int 操作类型
+     * @param $Id int 订单编号
+     * @return mixed 发送结果
+     * 操作类型 0 , 2 , 4
+     */
+    public function consultingMessage($userId,$type,$Id){
+        global $sql;
+        $openId = $sql->query("select `openId` from `user` where Id = '$userId'")->fetch_row()[0];
+        switch ($type){
+            case 0:
+                $message = "您的接单同学申请加价";
+                break;
+            case 2:
+                $message = "您的接单同学想要拒接";
+                break;
+            case 4:
+                $message = "现在已经竟如平台介入,不要担心,嗖嗖顺保证会给您一个满意的结果~请耐心等待";
+                break;
+            case"5":
+                $message = "现在,悬赏编号 : $Id 进入介入阶段,赶快处理";
+        }
+        $content = '{
+           "touser":"' . $openId . '",
+           "template_id":"4N6uQcQXEGpzaHIQCEigbvoTdRx8Ksh8KY07gTVl4rI",
+           "url":"http://dq.97qingnian.com/index.html#/state",            
+           "data":{
+                   "first": {
+                       "value":"'.$message.'！",
+                       "color":"#333"
+                   },
+                   "keyword1":{
+                       "value":"' . $Id . '",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":"' . date("H点i分s秒") . '",
+                       "color":"#173177"
+                   },
+                   "remark":{
+                       "value":"如需帮助,可以直接回复",
+                       "color":"#333"
+                   }
+           }
+       }';
+        require_once "wxControl.php";
+        $ACT = \wxControl::getAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
+        $opts = array('http' =>
+            array(
+
+                'method' => 'POST',
+
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+
+                'content' => $content
+
+            )
+        );
+        $context = stream_context_create($opts);
+        return file_get_contents($url, false, $context);
+    }
+
+    /**
+     * 微信接单提醒
      * @param int $Id 订单Id
      * @param int $userId 接受消息的用户Id
      * @return bool 处理结果
