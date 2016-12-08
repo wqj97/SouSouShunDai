@@ -16,14 +16,22 @@ class pay
     /**
      * 支付模块
      * @param int $fee 价格
+     * @param int $Id 用户Id
      * @return string JavaScript,执行以付款
      */
 
 
-    static public function getPay($fee)
+    static public function getPay($fee,$Id)
     {
         require_once "lib/WxPay.JsApiPay.php";
-
+        global $sql;
+        $hasDiscount = $sql->query("select `discountActived` from `user` WHERE Id = '$Id' and discount is not null")->fetch_row()[0];
+        if($hasDiscount){
+            $fee -= 3;
+            if($fee <=0){
+                $fee = 0.01;
+            }
+        }
         //①、获取用户openid
         $tools = new JsApiPay();
         $openId = $_COOKIE["openid"];

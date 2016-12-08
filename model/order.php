@@ -16,7 +16,7 @@ class order
             $action->execute();
             $Id = $action->insert_id;
             if (!$action->error) {
-                $No = \pay::getPay($price);
+                $No = \pay::getPay($price,$_SESSION["UID"]);
                 $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
                 echo $sql->error;
             } else {
@@ -29,7 +29,7 @@ class order
             $action->free_result();
             $Id = $action->insert_id;
             if (!$action->error) {
-                $No = \pay::getPay($price);
+                $No = \pay::getPay($price,$_SESSION["UID"]);
                 $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
                 echo $sql->error;
             } else {
@@ -126,6 +126,8 @@ class order
             }
             $val["position"] = $userInfo[1];
             $val["sexual"] = $userInfo[0];
+            preg_match(position,$val["expressSMS"],$position);
+            $val["address"] = isset($position[0]) ? $position[0] : "代取悬赏";
             preg_match(expressLTD, $val["expressSMS"], $val["expressSMS"]);
             if(empty($val['expressSMS'])){
                 $val["expressSMS"] = "快递悬赏";

@@ -50,13 +50,14 @@ class PayNotifyCallBack extends WxPayNotify
         global $sql;
         log::INFO("data : ". json_encode($data));
         $sign = $data["out_trade_no"];
-        $isset = $sql->query("select Id from `orders` where `payId` = '$sign'")->fetch_row();
+        $isset = $sql->query("select Id,userId from `orders` where `payId` = '$sign'")->fetch_row();
         if ($isset){
             return;
         }
         $sql->query("update `orders` set `payId` = '$sign' where `sign` = '$sign'");
+        $sql->query("update `user` set `discountActived` = NULL ");
         require_once "model/order.php";
-        \Wang\order::watcher($data,alertUser);
+//        \Wang\order::watcher($data,alertUser);
     }
 }
 

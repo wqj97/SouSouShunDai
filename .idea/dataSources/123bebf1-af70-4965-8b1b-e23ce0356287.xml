@@ -6,299 +6,312 @@
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
-    <schema id="3" parent="1" name="188hmw"/>
-    <schema id="4" parent="1" name="ajax"/>
-    <schema id="5" parent="1" name="BestPark"/>
-    <schema id="6" parent="1" name="blog"/>
-    <schema id="7" parent="1" name="information_schema"/>
-    <schema id="8" parent="1" name="mysql"/>
-    <schema id="9" parent="1" name="performance_schema"/>
-    <schema id="10" parent="1" name="qiaoqiao"/>
-    <schema id="11" parent="1" name="zhaoxiangguan"/>
-    <table id="12" parent="2" name="SMS"/>
-    <table id="13" parent="2" name="addFee"/>
-    <table id="14" parent="2" name="orders"/>
-    <table id="15" parent="2" name="user"/>
-    <column id="16" parent="12" name="Id">
+    <schema id="3" parent="1" name="information_schema"/>
+    <schema id="4" parent="1" name="mysql"/>
+    <schema id="5" parent="1" name="performance_schema"/>
+    <schema id="6" parent="1" name="qiaoqiao"/>
+    <schema id="7" parent="1" name="zhaoxiangguan"/>
+    <table id="8" parent="2" name="SMS"/>
+    <table id="9" parent="2" name="addFee"/>
+    <table id="10" parent="2" name="orders"/>
+    <table id="11" parent="2" name="user"/>
+    <column id="12" parent="8" name="Id">
       <Position>1</Position>
       <DataType>int(255)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="17" parent="12" name="phone">
+    <column id="13" parent="8" name="phone">
       <Position>2</Position>
       <Comment>手机号</Comment>
       <DataType>varchar(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="18" parent="12" name="date">
+    <column id="14" parent="8" name="date">
       <Position>3</Position>
       <Comment>当日日期</Comment>
       <DataType>varchar(15)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="19" parent="12" name="expireTime">
+    <column id="15" parent="8" name="expireTime">
       <Position>4</Position>
       <Comment>有效时长</Comment>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="20" parent="12" name="code">
+    <column id="16" parent="8" name="code">
       <Position>5</Position>
       <Comment>验证码</Comment>
       <DataType>varchar(6)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="21" parent="12" name="date">
+    <index id="17" parent="8" name="date">
       <ColNames>date</ColNames>
     </index>
-    <index id="22" parent="12" name="phone">
+    <index id="18" parent="8" name="phone">
       <ColNames>phone</ColNames>
     </index>
-    <key id="23" parent="12" name="PRIMARY">
+    <key id="19" parent="8" name="PRIMARY">
       <ColNames>Id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="24" parent="13" name="Id">
+    <column id="20" parent="9" name="Id">
       <Position>1</Position>
       <DataType>int(255)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="25" parent="13" name="userId">
+    <column id="21" parent="9" name="userId">
       <Position>2</Position>
       <Comment>用户openId</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="26" parent="13" name="orderId">
+    <column id="22" parent="9" name="orderId">
       <Position>3</Position>
       <Comment>订单编号</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="27" parent="13" name="payId">
+    <column id="23" parent="9" name="payId">
       <Position>4</Position>
       <Comment>支付编号</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="28" parent="13" name="price">
+    <column id="24" parent="9" name="price">
       <Position>5</Position>
       <Comment>加价价格</Comment>
       <DataType>int(255)|0</DataType>
     </column>
-    <column id="29" parent="13" name="date">
+    <column id="25" parent="9" name="date">
       <Position>6</Position>
       <Comment>插入时间</Comment>
       <DataType>timestamp|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <index id="30" parent="13" name="orderId">
+    <index id="26" parent="9" name="orderId">
       <ColNames>orderId</ColNames>
     </index>
-    <index id="31" parent="13" name="userId">
+    <index id="27" parent="9" name="userId">
       <ColNames>userId</ColNames>
     </index>
-    <key id="32" parent="13" name="PRIMARY">
+    <key id="28" parent="9" name="PRIMARY">
       <ColNames>Id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="33" parent="14" name="Id">
+    <column id="29" parent="10" name="Id">
       <Position>1</Position>
       <DataType>int(255)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="34" parent="14" name="userId">
+    <column id="30" parent="10" name="userId">
       <Position>2</Position>
       <Comment>user表Id</Comment>
       <DataType>int(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="35" parent="14" name="toker">
+    <column id="31" parent="10" name="toker">
       <Position>3</Position>
       <Comment>接单者Id</Comment>
       <DataType>int(255)|0</DataType>
     </column>
-    <column id="36" parent="14" name="date">
+    <column id="32" parent="10" name="date">
       <Position>4</Position>
       <Comment>日期,和存活时间搭配</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="37" parent="14" name="price">
+    <column id="33" parent="10" name="price">
       <Position>5</Position>
       <Comment>价格</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="38" parent="14" name="consulting">
+    <column id="34" parent="10" name="consulting">
       <Position>6</Position>
       <Comment>是否在商议,0. 要求加价 , 1. 同意加价 , 2. 要求拒接 , 3. 同意拒接 , 4. 嗖嗖顺带介入</Comment>
       <DataType>int(2)|0</DataType>
     </column>
-    <column id="39" parent="14" name="expressSMS">
+    <column id="35" parent="10" name="expressSMS">
       <Position>7</Position>
       <Comment>快递信</Comment>
       <DataType>mediumtext|0</DataType>
     </column>
-    <column id="40" parent="14" name="payId">
+    <column id="36" parent="10" name="payId">
       <Position>8</Position>
       <Comment>支付订单号,0表未支付</Comment>
       <DataType>varchar(255)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="41" parent="14" name="size">
+    <column id="37" parent="10" name="size">
       <Position>9</Position>
       <Comment>物件大小</Comment>
       <DataType>varchar(255)|0</DataType>
-      <NotNull>1</NotNull>
     </column>
-    <column id="42" parent="14" name="sign">
+    <column id="38" parent="10" name="sign">
       <Position>10</Position>
       <Comment>订单签名</Comment>
       <DataType>varchar(255)|0</DataType>
     </column>
-    <column id="43" parent="14" name="remark">
+    <column id="39" parent="10" name="remark">
       <Position>11</Position>
       <Comment>订单备注</Comment>
       <DataType>mediumtext|0</DataType>
     </column>
-    <column id="44" parent="14" name="finish">
+    <column id="40" parent="10" name="finish">
       <Position>12</Position>
       <Comment>订单完成0未完成,1完成,2取消</Comment>
       <DataType>int(2)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="45" parent="14" name="hasPaid">
+    <column id="41" parent="10" name="hasPaid">
       <Position>13</Position>
       <Comment>是否已经打款</Comment>
       <DataType>int(1)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="46" parent="14" name="addFee">
+    <column id="42" parent="10" name="addFee">
       <Position>14</Position>
       <Comment>是否加价</Comment>
       <DataType>int(2)|0</DataType>
     </column>
-    <column id="47" parent="14" name="insertTime">
+    <column id="43" parent="10" name="insertTime">
       <Position>19</Position>
       <Comment>插入时间</Comment>
       <DataType>timestamp|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <column id="48" parent="14" name="type">
+    <column id="44" parent="10" name="type">
       <Position>15</Position>
       <Comment>0:代取悬赏,1:多样悬赏</Comment>
       <DataType>int(2)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="49" parent="14" name="message">
+    <column id="45" parent="10" name="message">
       <Position>16</Position>
       <Comment>捎句话内容</Comment>
       <DataType>varchar(2000)|0</DataType>
     </column>
-    <column id="50" parent="14" name="autoPosition">
+    <column id="46" parent="10" name="autoPosition">
       <Position>17</Position>
       <Comment>0:自动地址,其他情况为手动地址内容</Comment>
       <DataType>varchar(255)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="51" parent="14" name="keyWord">
+    <column id="47" parent="10" name="keyWord">
       <Position>18</Position>
       <Comment>关键词</Comment>
       <DataType>varchar(255)|0</DataType>
     </column>
-    <index id="52" parent="14" name="Out_trade_no">
+    <index id="48" parent="10" name="Out_trade_no">
       <ColNames>sign</ColNames>
     </index>
-    <index id="53" parent="14" name="payId">
+    <index id="49" parent="10" name="payId">
       <ColNames>payId</ColNames>
     </index>
-    <index id="54" parent="14" name="userId">
+    <index id="50" parent="10" name="userId">
       <ColNames>userId</ColNames>
     </index>
-    <key id="55" parent="14" name="PRIMARY">
+    <index id="51" parent="10" name="finish">
+      <ColNames>finish</ColNames>
+    </index>
+    <key id="52" parent="10" name="PRIMARY">
       <ColNames>Id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="56" parent="15" name="Id">
+    <column id="53" parent="11" name="Id">
       <Position>1</Position>
       <DataType>int(255)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="57" parent="15" name="name">
+    <column id="54" parent="11" name="name">
       <Position>2</Position>
       <Comment>昵称</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="58" parent="15" name="phone">
+    <column id="55" parent="11" name="phone">
       <Position>3</Position>
       <Comment>手机号</Comment>
       <DataType>varchar(15)|0</DataType>
     </column>
-    <column id="59" parent="15" name="pwd">
+    <column id="56" parent="11" name="pwd">
       <Position>4</Position>
       <Comment>密码(暂无效)</Comment>
       <DataType>varchar(255)|0</DataType>
     </column>
-    <column id="60" parent="15" name="openId">
+    <column id="57" parent="11" name="openId">
       <Position>5</Position>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="61" parent="15" name="AccessToken">
+    <column id="58" parent="11" name="AccessToken">
       <Position>6</Position>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="62" parent="15" name="RefreshToken">
+    <column id="59" parent="11" name="RefreshToken">
       <Position>7</Position>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="63" parent="15" name="ACTexpires">
+    <column id="60" parent="11" name="ACTexpires">
       <Position>8</Position>
       <Comment>AccessToken有效时长</Comment>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="64" parent="15" name="position">
+    <column id="61" parent="11" name="position">
       <Position>9</Position>
       <Comment>位置信息,格式JSON</Comment>
       <DataType>varchar(255)|0</DataType>
     </column>
-    <column id="65" parent="15" name="sexual">
+    <column id="62" parent="11" name="sexual">
       <Position>10</Position>
       <Comment>0男,1女</Comment>
       <DataType>int(2)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="66" parent="15" name="type">
+    <column id="63" parent="11" name="type">
       <Position>11</Position>
       <Comment>0:普通用户,1:10单用户.2:无限接单用户</Comment>
       <DataType>int(11)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="67" parent="15" name="head">
+    <column id="64" parent="11" name="head">
       <Position>12</Position>
       <Comment>头像,有默认头像</Comment>
       <DataType>varchar(255)|0</DataType>
       <DefaultExpression>&apos;static/img/DefaultHead.png&apos;</DefaultExpression>
     </column>
-    <column id="68" parent="15" name="insertTime">
-      <Position>13</Position>
+    <column id="65" parent="11" name="insertTime">
+      <Position>16</Position>
       <Comment>加入时间</Comment>
       <DataType>timestamp|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <key id="69" parent="15" name="PRIMARY">
+    <column id="66" parent="11" name="discountSend">
+      <Position>13</Position>
+      <Comment>优惠短信已送达</Comment>
+      <DataType>int(1)|0</DataType>
+    </column>
+    <column id="67" parent="11" name="discount">
+      <Position>14</Position>
+      <Comment>优惠资格</Comment>
+      <DataType>int(1)|0</DataType>
+    </column>
+    <column id="68" parent="11" name="discountActived">
+      <Position>15</Position>
+      <Comment>优惠激活</Comment>
+      <DataType>int(1)|0</DataType>
+    </column>
+    <key id="69" parent="11" name="PRIMARY">
       <ColNames>Id</ColNames>
       <Primary>1</Primary>
     </key>

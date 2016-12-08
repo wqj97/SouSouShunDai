@@ -6,6 +6,13 @@
  * Time: 上午11:46
  */
 session_start();
+if(isset($_GET["token"])){
+    if($_GET["action"] == "wqj" || $_GET["action"] == "zy" || $_GET["action"] == "doing" || $_GET["action"] == "test"){
+        if($_GET["token"] == "Wanqj97"){
+            return;
+        }
+    }
+}
 isset($_GET["action"]) ? $action = $_GET["action"] : $action = "";
 
 switch ($action) {
@@ -22,14 +29,6 @@ switch ($action) {
         session_destroy();
         setcookie("openid", "", -1, "/");
         break;
-//    case "act":
-//        require_once "../model/wxControl.php";
-//        echo wxControl::getAccessToken();
-//    case "sms":
-//        require_once "../model/SMS.php";
-//        $sms = new \Wan\SMS();
-//        echo $sms->aliSend("13347320707","Conquer.XW","10分钟");
-//        break;
     case "recover":
         require_once "../model/order.php";
         $recover = new \Wang\order();
@@ -93,13 +92,6 @@ switch ($action) {
 </tr>";
         }
         echo "</table>";
-        break;
-    case "consult":
-        require_once "../model/order.php";
-        $order = new \Wang\order();
-        $_POST["fee"] = 1;
-        echo "<script>document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false); function onBridgeReady() {";
-        echo $order->consult(314,1)."}</script>";
         break;
     case "test" :
         require_once "../model/base.php";
