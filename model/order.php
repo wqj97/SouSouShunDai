@@ -53,56 +53,56 @@ class order
     }
 
     //获取所有订单----根据page分页
-    public function getOrder($page)
-    {
-        global $sql;
-        $start = ($page - 1) * 12;
-        $order = [];
-        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS`,`addFee` from `orders` where `toker` is NULL and `payId` != 0 and `finish` = 0 ORDER BY `Id` DESC limit $start,12")->fetch_all(MYSQLI_ASSOC);
-        foreach ($orderInfo as $key => $val) {
-            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
-            if ($val["addFee"] == 1) {
-                $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
-                foreach ($prices as $PriceKey => $PriceVal) {
-                    $val["price"] += $PriceVal["price"];
-                }
-            }
-            $sms = $val["expressSMS"];
-//            preg_match("/菜鸟驿站|小树林|奥克米|软件园/", $sms, $sms);
-//            if (!isset($sms[0])) {
-//                $sms[0] = $val["expressSMS"];
-//                $len = strlen($sms[0]);
-//                if ($len >= 5) {
-//                    $len = 5;
+//    public function getOrder($page)
+//    {
+//        global $sql;
+//        $start = ($page - 1) * 12;
+//        $order = [];
+//        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS`,`addFee` from `orders` where `toker` is NULL and `payId` != 0 and `finish` = 0 ORDER BY `Id` DESC limit $start,12")->fetch_all(MYSQLI_ASSOC);
+//        foreach ($orderInfo as $key => $val) {
+//            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
+//            if ($val["addFee"] == 1) {
+//                $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
+//                foreach ($prices as $PriceKey => $PriceVal) {
+//                    $val["price"] += $PriceVal["price"];
 //                }
-//                $sms[0] = mb_substr($sms[0], 0, $len);
 //            }
-            array_push($order, ["Id" => $val["Id"], "size" => $val["size"], "price" => (String)$val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"]]);
-        }
-        $usedorder = [];
-        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS`,`addFee` from `orders` where `finish` = 1 order by Id desc limit 6")->fetch_all(1);
-        foreach ($orderInfo as $key => $val) {
-            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
-            if ($val["addFee"] == 1) {
-                $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
-                foreach ($prices as $PriceKey => $PriceVal) {
-                    $val["price"] += $PriceVal["price"];
-                }
-            }
-            $sms = $val["expressSMS"];
-//            preg_match("/菜鸟驿站|小树林|奥克米|软件园/", $sms, $sms);
-//            if (!isset($sms[0])) {
-//                $sms[0] = $val["expressSMS"];
-//                $len = strlen($sms[0]);
-//                if ($len >= 5) {
-//                    $len = 5;
+//            $sms = $val["expressSMS"];
+////            preg_match("/菜鸟驿站|小树林|奥克米|软件园/", $sms, $sms);
+////            if (!isset($sms[0])) {
+////                $sms[0] = $val["expressSMS"];
+////                $len = strlen($sms[0]);
+////                if ($len >= 5) {
+////                    $len = 5;
+////                }
+////                $sms[0] = mb_substr($sms[0], 0, $len);
+////            }
+//            array_push($order, ["Id" => $val["Id"], "size" => $val["size"], "price" => (String)$val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"]]);
+//        }
+//        $usedorder = [];
+//        $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`expressSMS`,`addFee` from `orders` where `finish` = 1 order by Id desc limit 6")->fetch_all(1);
+//        foreach ($orderInfo as $key => $val) {
+//            $userInfo = $sql->query("select `position`,`sexual` from `user` where Id = '$val[userId]'")->fetch_array(1);
+//            if ($val["addFee"] == 1) {
+//                $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
+//                foreach ($prices as $PriceKey => $PriceVal) {
+//                    $val["price"] += $PriceVal["price"];
 //                }
-//                $sms[0] = mb_substr($sms[0], 0, $len);
 //            }
-            array_push($usedorder, ["Id" => $val["Id"], "size" => $val["size"], "price" => (String)$val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"]]);
-        }
-        return $this->JSONout([$order, $usedorder]);
-    }
+//            $sms = $val["expressSMS"];
+////            preg_match("/菜鸟驿站|小树林|奥克米|软件园/", $sms, $sms);
+////            if (!isset($sms[0])) {
+////                $sms[0] = $val["expressSMS"];
+////                $len = strlen($sms[0]);
+////                if ($len >= 5) {
+////                    $len = 5;
+////                }
+////                $sms[0] = mb_substr($sms[0], 0, $len);
+////            }
+//            array_push($usedorder, ["Id" => $val["Id"], "size" => $val["size"], "price" => (String)$val["price"], "position" => $userInfo["position"], "sexual" => $userInfo["sexual"], "remark" => $val["remark"]]);
+//        }
+//        return $this->JSONout([$order, $usedorder]);
+//    }
 
     /**
      * @param int $page 页码
@@ -518,10 +518,10 @@ class order
                 $message = "您的接单同学想要拒接";
                 break;
             case 4:
-                $message = "现在已经竟如平台介入,不要担心,嗖嗖顺保证会给您一个满意的结果~请耐心等待";
+                $message = "现在已经进如平台介入,不要担心,嗖嗖顺代保证会给您一个满意的结果~请耐心等待";
                 break;
-            case"5":
-                $message = "现在,悬赏编号 : $Id 进入介入阶段,赶快处理";
+            case 5:
+                $message = date("H:i:s").",编号 : $Id 进入介入阶段,管理员尽快处理";
         }
         $content = '{
            "touser":"' . $openId . '",

@@ -8,25 +8,25 @@
 error_reporting(2048);
 require_once "../model/base.php";
 global $sql;
-$action = $sql->prepare("SELECT `head`,`discountActived`,`discount`,`openId` FROM user WHERE `phone` = ?");
+$action = $sql->prepare("SELECT `head`,`discountActived`,`discount`,`openId` FROM `user` WHERE `phone` = ?");
 $action->bind_param("s", $_GET["phone"]);
-$action->bind_result($userHead, $discountActived,$discount,$openId);
+$action->bind_result($userHead, $discountActived, $discount, $openId);
 $action->execute();
 $action->fetch();
 $action->free_result();
-if(empty($userHead)){
+if (empty($userHead)) {
     $userHead = "/logo.png";
 }
 if ($discountActived != 1) {
-    $action = $sql->prepare("UPDATE `user` SET `discount` = 1,`discountActived` = 1 WHERE `phone` = ? and `discount` is NULL ");
+    $action = $sql->prepare("UPDATE `user` SET `discount` = 1,`discountActived` = 1 WHERE `phone` = ? AND `discount` IS NULL ");
     $action->bind_param("s", $_GET["phone"]);
     $action->execute();
     $action->free_result();
 }
-sendFinishMessage();
-function sendFinishMessage()
+sendFinishMessage($discount);
+function sendFinishMessage($discount)
 {
-    if(!empty($discount)){
+    if ($discount == 1) {
         return;
     }
     global $sql;
@@ -49,7 +49,7 @@ function sendFinishMessage()
                        "color":"#173177"
                    },
                    "time": {
-                       "value":"'.date("Y.m.d H:i:s").'",
+                       "value":"' . date("Y.m.d H:i:s") . '",
                        "color":"#173177"
                    },
                    "remark":{
@@ -75,6 +75,7 @@ function sendFinishMessage()
     $context = stream_context_create($opts);
     file_get_contents($url, false, $context);
 }
+
 ?>
 <!doctype html>
 <html lang="zh">
@@ -85,9 +86,10 @@ function sendFinishMessage()
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <style>
         @font-face {
-            src:url('Go_Boom!.ttf');
+            src: url('Go_Boom!.ttf');
             font-family: "GoBoom";
         }
+
         html, body {
             width: 100%;
             height: 100%;
@@ -100,14 +102,16 @@ function sendFinishMessage()
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction:column;
+            flex-direction: column;
             background: #75ddff;
             font-size: 62.5%;
         }
-        .logo img{
+
+        .logo img {
             border-radius: 15px;
             display: block;
         }
+
         .main {
             position: relative;
             transition: all .5s ease;
@@ -138,22 +142,25 @@ function sendFinishMessage()
         .main-user-head img {
             width: 100%;
         }
-        .main-user-head input{
-            font-family:"GoBoom";
-            width:100%;
-            height:75px;
+
+        .main-user-head input {
+            font-family: "GoBoom";
+            width: 100%;
+            height: 75px;
             text-align: center;
-            border:none;
+            border: none;
             outline: none;
-            padding:0;
-            font-size:35px;
+            padding: 0;
+            font-size: 35px;
             letter-spacing: 10px;
         }
-        .main-user-head input::-webkit-input-placeholder{
+
+        .main-user-head input::-webkit-input-placeholder {
             color: #dbdbdb !important;
             letter-spacing: normal;
-            font-size:24px;
+            font-size: 24px;
         }
+
         .main-accept {
             height: 5rem;
             line-height: 5rem;
@@ -183,20 +190,20 @@ if (isset($_GET["phone"])) {
         echo "您<span style=\"font-weight: bold;font-size: 2rem;\">已经</span>领取过 <span style=\"color: #ffe90d;font-weight: bold;font-size: 2rem;\">3</span> 元免单";
         echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击前往微信</div></div>';
 
-    } elseif ($userHead == "/logo.png"){
+    } elseif ($userHead == "/logo.png") {
         echo "这个手机号还没有注册";
         echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击去嗖嗖顺带完善个人信息</div></div>';
 
-    }else {
+    } else {
         echo "成功领取 <span style=\"color: #ffe90d;font-weight: bold;font-size: 2rem;\">3</span> 元免单";
         echo '</div><div class="main-user-head"><img src="' . $userHead . '"></div><div class="main-accept">点击前往微信</div></div>';
 
     }
-}else{
+} else {
     echo '<div class="main">
     <div class="main-head">输入手机号领取 <span style="color: #ffe90d;font-weight: bold;font-size: 2rem;">3</span> 元免单</div>
     <div class="main-user-head"><input type="text" placeholder="在这里输入手机号" id="phone"></div>
-    <div class="main-accept">点击领取</div>
+    <div class="main-accept">优惠活动已经结束~</div>
 </div>';
 }
 ?>
@@ -208,25 +215,34 @@ if (isset($_GET["phone"])) {
 <script>
     window.onload = function () {
         document.querySelector(".main-accept").addEventListener("touchend", function () {
-            go();
+//            go();
         })
     };
     function go() {
+        if(document.querySelector("#phone").value == ""){
+            return
+        }
         var main = document.querySelector(".main");
         main.className = "main ready";
         main.addEventListener("transitionend", function () {
             main.className = "main go"
         });
         setTimeout(function () {
-            if(document.querySelector("#phone")){
+            try {
+                if (navigator.userAgent.toLowerCase().match(/MicroMessenger/)[0] == "micromessenger") {
+                    location.href = "http://dq.97qingnian.com/webAccess.php"
+                }
+            }
+            catch(err){}
+            if (document.querySelector("#phone")) {
                 location.href = "discount.php?phone=" + document.querySelector("#phone").value;
-            }else{
+            } else {
                 location.href = "weixin://index";
             }
             setTimeout(function () {
                 document.body.removeChild(document.querySelector(".main"));
                 document.querySelector(".goByself").style.display = "block"
-            },1000)
+            }, 1000)
         }, 1500)
     }
 </script>

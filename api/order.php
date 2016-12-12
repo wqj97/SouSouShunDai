@@ -24,9 +24,9 @@ switch ($_GET['action']) {
             echo $order->newOrder($_POST["date"],$_POST["price"],$_POST["message"],$_POST["autoPosition"],$_POST["keyWord"],$_POST["type"]);
         }
         break;
-    case "getAll":
-        echo $order->getOrder($_POST["page"]);
-        break;
+//    case "getAll":
+//        echo $order->getOrder($_POST["page"]);
+//        break;
     case "get":
         echo $order->getOrderById($_POST["Id"]);
         break;

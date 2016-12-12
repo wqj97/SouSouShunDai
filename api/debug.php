@@ -6,11 +6,14 @@
  * Time: 上午11:46
  */
 session_start();
-if(isset($_GET["token"])){
-    if($_GET["action"] == "wqj" || $_GET["action"] == "zy" || $_GET["action"] == "doing" || $_GET["action"] == "test"){
-        if($_GET["token"] == "Wanqj97"){
-            return;
+
+if ($_GET["action"] == "wqj" || $_GET["action"] == "zy" || $_GET["action"] == "doing" || $_GET["action"] == "test") {
+    if (isset($_GET["token"])) {
+        if ($_GET["token"] != "Wanqj97") {
+            exit();
         }
+    }else{
+        exit();
     }
 }
 isset($_GET["action"]) ? $action = $_GET["action"] : $action = "";
@@ -32,13 +35,13 @@ switch ($action) {
     case "recover":
         require_once "../model/order.php";
         $recover = new \Wang\order();
-        echo "删除无效订单数 : ".$recover->recoverOrder()." 个";
+        echo "删除无效订单数 : " . $recover->recoverOrder() . " 个";
         break;
     case "doing":
         require_once "../model/base.php";
         global $sql;
-        $consulting = ["无协商","要求加价","要求拒接","嗖嗖介入"];
-        $result = $sql->query("select `userId`,`toker`,`price`,`consulting`,`remark`,`size`,`Id`,`date` from `orders` where finish = 0 and toker is not NULL order by Id DESC ")->fetch_all();
+        $consulting = ["无协商", "要求加价", "要求拒接", "嗖嗖介入"];
+        $result = $sql->query("SELECT `userId`,`toker`,`price`,`consulting`,`remark`,`size`,`Id`,`date` FROM `orders` WHERE finish = 0 AND toker IS NOT NULL ORDER BY Id DESC ")->fetch_all();
         echo "<meta charset='utf-8'>";
         echo "<style>td{text-align: center;margin: 2px;}tr{margin: 3px 0;border-bottom: 1px solid #333;}</style>";
         echo "<h1 style='text-align: center;'>正在进行的订单</h1>";
@@ -56,14 +59,14 @@ switch ($action) {
 <th>协商状态</th>
 <th>登录他</th>
 </tr>";
-        foreach ($result as $key => $val){
+        foreach ($result as $key => $val) {
             $sender = $sql->query("select `name`,`phone`,`position` from `user` where Id = '$val[0]'")->fetch_row();
             $toker = $sql->query("select `name`,`phone`,`position` from `user` where Id = '$val[1]'")->fetch_row();
             $consult = "";
-            if (empty($val[3])){
+            if (empty($val[3])) {
                 $val[3] = "NULL";
             }
-            switch ($val[3]){
+            switch ($val[3]) {
                 case "NULL":
                     $consult = $consulting[0];
                     break;
@@ -88,7 +91,7 @@ switch ($action) {
 <td>$toker[1]</td>
 <td>$sender[2]</td>
 <td>$consult</td>
-<td><a href='debug.php?action=test&Id=$val[0]'>登录</a></td>
+<td><a href='debug.php?action=test&Id=$val[0]&token=Wanqj97'>登录</a></td>
 </tr>";
         }
         echo "</table>";
@@ -98,7 +101,7 @@ switch ($action) {
         global $sql;
         $openid = $sql->query("select `openId` from `user` where Id = '$_GET[Id]'")->fetch_row()[0];
         $_SESSION["UID"] = $_GET["Id"];
-        setcookie("openid", "$openid", strtotime("+1 year"), "/");
+        setcookie("openid", "$openid", strtotime("+5 minutes"), "/");
         header("location:/index.html#/index");
         break;
 }

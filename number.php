@@ -15,7 +15,7 @@ global $sql;
 $phone = $sql->query("SELECT `phone` FROM `user` WHERE `phone` IS NOT NULL")->fetch_all(1);
 foreach ($phone as $key => $val){
     echo $val["phone"].",";
-    if($key % 25 == 0){
+    if($key % 10 == 0){
         echo "</br>";
     }
 }
