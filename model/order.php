@@ -484,7 +484,7 @@ class order
                 $sql->query("update `orders` set `consulting` = 4 where Id = '$Id'");
                 $this->consultingMessage($orderInfo[1],4,$Id);
                 $this->consultingMessage($orderInfo[2],4,$Id);
-                foreach (admin as $key => $val){
+                foreach ([4,6,7,16,20,101,105] as $key => $val){
                     $this->consultingMessage($val,5,$Id);
                 }
                 return $this->JSONout(["result" => "成功"]);
