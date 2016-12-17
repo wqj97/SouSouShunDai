@@ -697,7 +697,7 @@ class order
                         "color":"#173177"
                    },
                    "remark":{
-                        "value":"订单价格: ' . ($data["total_fee"] / 100) . ' 元,\\n发布时间: ' . $hour . '时' . $minute . '分' . $second . '秒 \\n已通知消化团队:' . count($Ids) . '人",
+                        "value":"订单价格: ' . ($data["total_fee"] / 100) . ' 元,\\n发布时间: ' . $hour . '时' . $minute . '分' . $second . '秒,
                         "color":"#333"
                    }
            }
