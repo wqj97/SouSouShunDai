@@ -42,7 +42,8 @@ class SMS
 //        获取用户信息
 
         $userInfo = $sql->query("select `name` from `user` where Id = '$_SESSION[UID]'")->fetch_row()[0];
-
+        $userInfo = str_replace("."," ",$userInfo);
+        $userInfo = mb_substr($userInfo,0,6);
 //        发送信息
         if($userInfo == ""){
             $userInfo = "未填写";

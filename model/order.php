@@ -6,30 +6,30 @@ class order
 {
 
     //创建新订单
-    public function newOrder($date, $price, $_3, $_4, $_5,$type)
+    public function newOrder($date, $price, $_3, $_4, $_5, $type)
     {
         global $sql;
         require_once "pay.php";
-        if($type == 0){
-            $action = $sql->prepare("insert into orders(`userId`,`date`,`price`,`size`,`remark`,`expressSMS`,`type`) VALUES (?,?,?,?,?,?,?)");
-            $action->bind_param("sssssss", $_SESSION["UID"], $date, $price, $_3, $_4, $_5,$type);
+        if ($type == 0) {
+            $action = $sql->prepare("INSERT INTO orders(`userId`,`date`,`price`,`size`,`remark`,`expressSMS`,`type`) VALUES (?,?,?,?,?,?,?)");
+            $action->bind_param("sssssss", $_SESSION["UID"], $date, $price, $_3, $_4, $_5, $type);
             $action->execute();
             $Id = $action->insert_id;
             if (!$action->error) {
-                $No = \pay::getPay($price,$_SESSION["UID"]);
+                $No = \pay::getPay($price, $_SESSION["UID"]);
                 $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
                 echo $sql->error;
             } else {
                 return $this->JSONout(array("result" => "失败", "reason" => $sql->error));
             }
-        }else{
-            $action = $sql->prepare("insert into orders(`userId`,`date`,`price`,`message`,`autoPosition`,`type`,`keyWord`) VALUES (?,?,?,?,?,?,?)");
-            $action->bind_param("sssssss",$_SESSION["UID"],$date,$price,$_3,$_4,$type,$_5);
+        } else {
+            $action = $sql->prepare("INSERT INTO orders(`userId`,`date`,`price`,`message`,`autoPosition`,`type`,`keyWord`) VALUES (?,?,?,?,?,?,?)");
+            $action->bind_param("sssssss", $_SESSION["UID"], $date, $price, $_3, $_4, $type, $_5);
             $action->execute();
             $action->free_result();
             $Id = $action->insert_id;
             if (!$action->error) {
-                $No = \pay::getPay($price,$_SESSION["UID"]);
+                $No = \pay::getPay($price, $_SESSION["UID"]);
                 $sql->query("update `orders` set `sign` = '$No' where Id = '$Id'");
                 echo $sql->error;
             } else {
@@ -42,7 +42,7 @@ class order
     public function upOrder($Id, $date, $price, $size, $remark)
     {
         global $sql;
-        $action = $sql->prepare("update orders set `date`= ? ,`price`= ? ,`size`= ? ,`remark`= ?  WHERE Id= ? ");
+        $action = $sql->prepare("UPDATE orders SET `date`= ? ,`price`= ? ,`size`= ? ,`remark`= ?  WHERE Id= ? ");
         $action->bind_param("sssssss", $date, $price, $size, $remark, $Id);
         $action->execute();
         if (!$action->error) {
@@ -108,12 +108,13 @@ class order
      * @param int $page 页码
      * @return string JSON序列化的订单,12条
      */
-    public function getSingleListOrder($page = 1){
+    public function getSingleListOrder($page = 1)
+    {
         global $sql;
-        $start = ($page-1)*12;
+        $start = ($page - 1) * 12;
         $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`addFee`,`type`,`finish`,`date`,`toker`,`keyWord`,`autoPosition`,`message`,`expressSMS` from `orders` where payId != 0 and finish != 2 order by Id desc,finish limit $start,12")->fetch_all(1);
         $out = [];
-        foreach ($orderInfo as $key => $val){
+        foreach ($orderInfo as $key => $val) {
             $userInfo = $sql->query("select `sexual`,`position` from `user` where Id = '$val[userId]'")->fetch_row();
             if ($val["addFee"] == 1) {
                 $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
@@ -121,20 +122,20 @@ class order
                     $val["price"] += $PriceVal["price"];
                 }
             }
-            if(isset($val["toker"])){
-                $val["toker"] =true;
+            if (isset($val["toker"])) {
+                $val["toker"] = true;
             }
             $val["position"] = $userInfo[1];
             $val["sexual"] = $userInfo[0];
-            preg_match(position,$val["expressSMS"],$position);
+            preg_match(position, $val["expressSMS"], $position);
             $val["address"] = isset($position[0]) ? $position[0] : "代取悬赏";
             preg_match(expressLTD, $val["expressSMS"], $val["expressSMS"]);
-            if(empty($val['expressSMS'])){
+            if (empty($val['expressSMS'])) {
                 $val["expressSMS"] = "快递悬赏";
-            }else{
+            } else {
                 $val["expressSMS"] = $val["expressSMS"][0];
             }
-            array_push($out,$val);
+            array_push($out, $val);
         }
         return $this->JSONout($out);
     }
@@ -143,9 +144,9 @@ class order
     {
         $out = 0;
         global $sql;
-        $sql->query("delete from orders where `payId` = 0");
+        $sql->query("DELETE FROM orders WHERE `payId` = 0");
         $out += $sql->affected_rows;
-        $addfees = $sql->query("select Id,`orderId` from addFee where payId is NULL ")->fetch_all(1);
+        $addfees = $sql->query("SELECT Id,`orderId` FROM addFee WHERE payId IS NULL ")->fetch_all(1);
         foreach ($addfees as $key => $val) {
             $sql->query("update `orders` set `consulting` = NULL where Id = '$val[orderId]'");
             $sql->query("delete from addFee where Id = '$val[Id]'");
@@ -158,7 +159,7 @@ class order
     public function getPhone($Id)
     {
         global $sql;
-        $action = $sql->prepare("select `toker` from `orders` where Id = ?");
+        $action = $sql->prepare("SELECT `toker` FROM `orders` WHERE Id = ?");
         $action->bind_param("s", $Id);
         $action->bind_result($tokerId);
         $action->execute();
@@ -179,7 +180,7 @@ class order
         global $sql;
         $result = $sql->query("select `Id`,`expressSMS`,`price`,`size`,`remark`,`type`,`addFee`,`message`,`autoPosition`,`keyWord` from `orders` WHERE Id='$Id'");
         $order = $result->fetch_array(1);
-        if($order['addFee'] == 1){
+        if ($order['addFee'] == 1) {
             $prices = $sql->query("select `price` from `addFee` where orderId = '$order[Id]'")->fetch_all(1);
             foreach ($prices as $PriceKey => $PriceVal) {
                 $order["price"] += $PriceVal["price"];
@@ -308,9 +309,9 @@ class order
         if ($fee <= 100) {
             $fee = 100;
         }
-        if($orderInfo[3] == 1){
+        if ($orderInfo[3] == 1) {
             $fees = $sql->query("select price from `addFee` where orderId = '$Id' and `payId` is not NULL ")->fetch_all(1);
-            foreach ($fees as $key => $val){
+            foreach ($fees as $key => $val) {
                 $fee += $val["price"] * 100 * tax;
             }
         }
@@ -409,7 +410,7 @@ class order
         }
 
 //        判断订单状态
-        $actions = $sql->prepare("select `consulting` from `orders` where Id = ?");
+        $actions = $sql->prepare("SELECT `consulting` FROM `orders` WHERE Id = ?");
         $actions->bind_param("s", $Id);
         $actions->bind_result($consulting);
         $actions->execute();
@@ -432,7 +433,7 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单已经在协商,不能再重新进行协商"]);
                 }
                 $sql->query("update `orders` set `consulting` = 0 where Id = '$Id'");
-                $this->consultingMessage($orderInfo[2],0,$Id);
+                $this->consultingMessage($orderInfo[2], 0, $Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "1";
@@ -461,13 +462,13 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单已经在协商,不能再重新进行协商"]);
                 }
                 $sql->query("update `orders` set `consulting` = 2 where Id = '$Id'");
-                $this->consultingMessage($orderInfo[2],2,$Id);
+                $this->consultingMessage($orderInfo[2], 2, $Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "3":
                 $orderInfo = $sql->query("select `toker` from `orders` where Id = '$Id'")->fetch_row();
                 $sql->query("update `orders` set `toker` = null,`consulting`=null where Id = '$Id'");
-                $this->consultingMessage($orderInfo[0],3,$Id);
+                $this->consultingMessage($orderInfo[0], 3, $Id);
                 return $this->JSONout(["result" => "成功"]);
                 break;
             case "4":
@@ -482,10 +483,10 @@ class order
                     return $this->JSONout(["result" => "失败", "reason" => "订单还未接单"]);
                 }
                 $sql->query("update `orders` set `consulting` = 4 where Id = '$Id'");
-                $this->consultingMessage($orderInfo[1],4,$Id);
-                $this->consultingMessage($orderInfo[2],4,$Id);
-                foreach ([4,6,7,16,20,101,105] as $key => $val){
-                    $this->consultingMessage($val,5,$Id);
+                $this->consultingMessage($orderInfo[1], 4, $Id);
+                $this->consultingMessage($orderInfo[2], 4, $Id);
+                foreach ([4, 6, 7, 16, 20, 101, 105] as $key => $val) {
+                    $this->consultingMessage($val, 5, $Id);
                 }
                 return $this->JSONout(["result" => "成功"]);
                 break;
@@ -507,10 +508,11 @@ class order
      * @return mixed 发送结果
      * 操作类型 0 , 2 , 4
      */
-    public function consultingMessage($userId,$type,$Id){
+    public function consultingMessage($userId, $type, $Id)
+    {
         global $sql;
         $openId = $sql->query("select `openId` from `user` where Id = '$userId'")->fetch_row()[0];
-        switch ($type){
+        switch ($type) {
             case 0:
                 $message = "您的接单同学申请加价";
                 break;
@@ -521,7 +523,7 @@ class order
                 $message = "现在已经进如平台介入,不要担心,嗖嗖顺代保证会给您一个满意的结果~请耐心等待";
                 break;
             case 5:
-                $message = date("H:i:s").",编号 : $Id 进入介入阶段,管理员尽快处理";
+                $message = date("H:i:s") . ",编号 : $Id 进入介入阶段,管理员尽快处理";
         }
         $content = '{
            "touser":"' . $openId . '",
@@ -529,7 +531,7 @@ class order
            "url":"http://dq.97qingnian.com/index.html#/state",            
            "data":{
                    "first": {
-                       "value":"'.$message.'！",
+                       "value":"' . $message . '！",
                        "color":"#333"
                    },
                    "keyword1":{
@@ -680,30 +682,23 @@ class order
         $second = substr($time, 12, 2);
         foreach ($Ids as $key => $val) {
             $content = '{
-           "touser":"' . $val . '",
-           "template_id":"YNdcfpSLmlQ1N3R2AgPIDcmUjGC7LOi27g_lMR6ULUM",
-           "url":"http://dq.97qingnian.com/index.html#/index",            
-           "data":{
-                   "first": {
-                       "value":"有人发布了新的订单！",
-                       "color":"#333"
-                   },
-                   "OrderSn":{
-                       "value":"' . $data["out_trade_no"] . '",
-                       "color":"#173177"
-                   },
-                    "OrderStatus": {
-                        "value":"有人发布了新的订单",
-                        "color":"#173177"
-                   },
-                   "remark":{
-                        "value":"订单价格: ' . ($data["total_fee"] / 100) . ' 元,\\n发布时间: ' . $hour . '时' . $minute . '分' . $second . '秒,
-                        "color":"#333"
-                   }
-           }
-}
-
-';
+                            "touser":"' . $val . '",
+                            "template_id":"YNdcfpSLmlQ1N3R2AgPIDcmUjGC7LOi27g_lMR6ULUM",
+                            "url":"http://dq.97qingnian.com/index.html#/index",            
+                            "data":{
+                                    "first": {
+                                    "value":"有人发布了新的订单！",
+                                    "color":"#333"},
+                            "OrderSn":{
+                                    "value":"' . $data["out_trade_no"] . '",
+                                    "color":"#173177"},
+                            "OrderStatus": {
+                                    "value":"有人发布了新的订单",
+                                    "color":"#173177"},
+                            "remark":{
+                                    "value":"订单价格: ' . ($data["total_fee"] / 100) . ' 元,\\n发布时间: ' . $hour . '时' . $minute . '分' . $second . '秒",
+                                    "color":"#333"}}
+                        }';
             require_once "wxControl.php";
             $ACT = \wxControl::getAccessToken();
             $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $ACT;
@@ -719,9 +714,8 @@ class order
                 )
             );
             $context = stream_context_create($opts);
-            file_get_contents($url, false, $context);
+            echo file_get_contents($url, false, $context);
         }
-
     }
 
     //私有方法,接受数组变量,将它转化为JSON字符串返回
