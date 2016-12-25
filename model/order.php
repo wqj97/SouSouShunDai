@@ -521,6 +521,7 @@ class order
                 break;
             case 3:
                 $message = "同意拒接";
+                break;
             case 4:
                 $message = "现在已经进如平台介入,不要担心,嗖嗖顺代保证会给您一个满意的结果~请耐心等待";
                 break;
