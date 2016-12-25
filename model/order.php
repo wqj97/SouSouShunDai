@@ -517,8 +517,10 @@ class order
                 $message = "您的接单同学申请加价";
                 break;
             case 2:
-                $message = "您的接单同学想要拒接";
+                $message = "您的接单同学申请拒接";
                 break;
+            case 3:
+                $message = "同意拒接";
             case 4:
                 $message = "现在已经进如平台介入,不要担心,嗖嗖顺代保证会给您一个满意的结果~请耐心等待";
                 break;
