@@ -17,7 +17,7 @@ define("appId", "wx573174f0dbdb80b2");
 define("AppSecret", "986759a218f79dbe22683dfedc94dfa2");
 define("redirectURL", "http%3a%2f%2fdq.97qingnian.com%2fapi%2fgetAccess.php");
 define("userLevel", [3, 10, 9999]);
-define("tax", 0.9);
+define("tax", 1);
 define("alertUser", [
     "o2NgYwdiseIwOhdKTGSXFrZawK4I",
     "o2NgYwZNncz3EtcAxEKvChgVt6GU",

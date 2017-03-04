@@ -115,7 +115,7 @@ class order
         $orderInfo = $sql->query("select `Id`,`size`,`price`,`userId`,`remark`,`addFee`,`type`,`finish`,`date`,`toker`,`keyWord`,`autoPosition`,`message`,`expressSMS` from `orders` where payId != 0 and finish != 2 order by Id desc,finish limit $start,12")->fetch_all(1);
         $out = [];
         foreach ($orderInfo as $key => $val) {
-            $userInfo = $sql->query("select `sexual`,`position` from `user` where Id = '$val[userId]'")->fetch_row();
+            $userInfo = $sql->query("select `sexual`,`position`,`head`,`name` from `user` where Id = '$val[userId]'")->fetch_row();
             if ($val["addFee"] == 1) {
                 $prices = $sql->query("select `price` from `addFee` where orderId = '$val[Id]'")->fetch_all(1);
                 foreach ($prices as $PriceKey => $PriceVal) {
@@ -127,6 +127,8 @@ class order
             }
             $val["position"] = $userInfo[1];
             $val["sexual"] = $userInfo[0];
+            $val['head'] = $userInfo[2];
+            $val['nickname'] = $userInfo[3];
             preg_match(position, $val["expressSMS"], $position);
             $val["address"] = isset($position[0]) ? $position[0] : "代取悬赏";
             preg_match(expressLTD, $val["expressSMS"], $val["expressSMS"]);

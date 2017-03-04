@@ -10,7 +10,7 @@ require_once "model/base.php";
 if(!isset($_COOKIE["openid"])){
     $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".appId."&redirect_uri=".redirectURL."&response_type=code&scope=snsapi_userinfo#wechat_redirect&STATE=phone";
     header("location:$url");
-}else{
+} else {
     global $sql;
     $UID = $sql->query("select Id from `user` where `openId` = '$_COOKIE[openid]'")->fetch_row()[0];
     $_SESSION['UID'] = $UID;
